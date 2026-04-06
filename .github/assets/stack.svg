@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 40" width="600" height="40">
+  <defs>
+    <linearGradient id="pill1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#8B5CF6"/>
+      <stop offset="100%" style="stop-color:#E879F9"/>
+    </linearGradient>
+    <linearGradient id="pill2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#E879F9"/>
+      <stop offset="100%" style="stop-color:#06B6D4"/>
+    </linearGradient>
+    <linearGradient id="pill3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#06B6D4"/>
+      <stop offset="100%" style="stop-color:#8B5CF6"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="4" width="145" height="32" rx="16" fill="url(#pill1)"/>
+  <text x="72" y="25" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="600" fill="white">Winter CMS 1.2</text>
+  <rect x="155" y="4" width="115" height="32" rx="16" fill="url(#pill2)"/>
+  <text x="212" y="25" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="600" fill="white">Laravel 9</text>
+  <rect x="280" y="4" width="115" height="32" rx="16" fill="url(#pill3)"/>
+  <text x="337" y="25" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="600" fill="white">PHP 8.1+</text>
+  <rect x="405" y="4" width="130" height="32" rx="16" fill="url(#pill1)"/>
+  <text x="470" y="25" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="13" font-weight="600" fill="white">Tailwind CSS</text>
+</svg>
