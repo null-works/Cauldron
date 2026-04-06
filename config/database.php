@@ -32,7 +32,7 @@ return [
 
     'connections' => [
         'sqlite' => [
-            'database' => env('DB_DATABASE', '/home/mentalpop/web/systempanic.ca/public_html/storage/database.sqlite'),
+            'database' => env('DB_DATABASE', storage_path('database.sqlite')),
             'driver' => 'sqlite',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
             'prefix' => '',
@@ -41,7 +41,7 @@ return [
         'mysql' => [
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
-            'database' => env('DB_DATABASE', 'mentalpop_systempanic'),
+            'database' => env('DB_DATABASE', 'wintercms'),
             'driver' => 'mysql',
             'engine' => 'InnoDB',
             'host' => env('DB_HOST', '127.0.0.1'),
