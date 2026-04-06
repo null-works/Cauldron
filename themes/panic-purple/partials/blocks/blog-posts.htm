@@ -1,0 +1,254 @@
+{% set layoutConfig = {
+    '2x2': { cols: 'grid-cols-2', count: 4 },
+    '1x4': { cols: 'grid-cols-4', count: 4 },
+    '3x2': { cols: 'grid-cols-3', count: 6 },
+    '2x3': { cols: 'grid-cols-2', count: 6 }
+} %}
+
+{% set selectedLayout = layoutConfig[data.layout|default('2x2')] %}
+{% set postCount = data.post_count|default(selectedLayout.count) %}
+
+<style>
+.sticker-card {
+    display: block;
+    transition: transform 0.3s;
+    text-decoration: none;
+    position: relative;
+}
+
+.sticker-card:hover {
+    transform: translateY(-8px) rotate(0deg) !important;
+}
+
+.card-container {
+    position: relative;
+    background: white;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    clip-path: polygon(
+        0 0,
+        calc(100% - 60px) 0,
+        100% 60px,
+        100% 100%,
+        0 100%
+    );
+}
+
+.image-box {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: black;
+    border-radius: 6px;
+    overflow: hidden;
+    clip-path: polygon(
+        0 0,
+        calc(100% - 48px) 0,
+        100% 48px,
+        100% 100%,
+        0 100%
+    );
+}
+
+.image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #8B5CF6 0%, #6366f1 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    color: rgba(229, 231, 235, 0.5);
+}
+
+.text-gradient {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60%;
+    background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
+    pointer-events: none;
+}
+
+.text-area {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    z-index: 5;
+}
+
+.sticker-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.sticker-excerpt {
+    font-size: 11px;
+    margin-bottom: 6px;
+    opacity: 0.95;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.sticker-meta {
+    font-size: 10px;
+    opacity: 0.8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Triangle 1: White base */
+.white-tri {
+    position: absolute;
+    top: 12px;
+    right: 60px;
+    width: 48px;
+    height: 48px;
+    z-index: 50;
+    transform: rotate(-90deg);
+    transform-origin: top right;
+}
+
+.white-tri canvas {
+    width: 100%;
+    height: 100%;
+}
+
+/* Triangle 2: Gray fold */
+.gray-fold {
+    position: absolute;
+    top: 0;
+    right: 60px;
+    width: 60px;
+    height: 60px;
+    z-index: 100;
+    transform: rotate(-90deg);
+    transform-origin: top right;
+}
+
+.gray-fold canvas {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(-4px 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+.gray-fold::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle at top right, rgba(0,0,0,0.3) 0%, transparent 70%);
+    z-index: -1;
+    pointer-events: none;
+}
+</style>
+
+<section class="blog-posts-section py-8 {{ data.custom_css_class }}">
+    {% if data.title %}
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-panic-purple glow">{{ data.title }}</h2>
+            {% if data.subtitle %}
+                <p class="text-panic-text/80 mt-2">{{ data.subtitle }}</p>
+            {% endif %}
+        </div>
+    {% endif %}
+    
+    <div class="grid {{ selectedLayout.cols }} gap-8 max-w-6xl mx-auto" style="padding: 20px 0;">
+        {% if posts %}
+            {% for post in posts %}
+                {% set rotation = loop.index is odd ? 'rotate(-2deg)' : 'rotate(2deg)' %}
+                <a href="{{ postPage }}/{{ post.slug }}" class="sticker-card" style="transform: {{ rotation }};">
+                    <div class="card-container">
+                        <div class="white-tri">
+                            <canvas class="white-triangle-canvas" width="48" height="48"></canvas>
+                        </div>
+                        <div class="gray-fold">
+                            <canvas class="gray-fold-canvas" width="60" height="60"></canvas>
+                        </div>
+                        
+                        <div class="image-box">
+                            {% if post.featured_images|length %}
+                                <img src="{{ post.featured_images[0].path }}" alt="{{ post.title }}">
+                            {% else %}
+                                <div class="placeholder">
+                                    <i class="icon-file-text-o"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="text-gradient"></div>
+                            
+                            <div class="text-area">
+                                <div class="sticker-title">{{ post.title }}</div>
+                                
+                                {% if data.show_excerpt and post.summary %}
+                                    <div class="sticker-excerpt">{{ post.summary }}</div>
+                                {% endif %}
+                                
+                                <div class="sticker-meta">
+                                    {% if data.show_date %}
+                                        <span>{{ post.published_at|date('M j, Y') }}</span>
+                                    {% endif %}
+                                    <span style="color: #06B6D4; font-weight: bold;">READ →</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        {% else %}
+            <p class="text-panic-text/80 col-span-full text-center">No blog posts found. Create some in Blog → Posts!</p>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Draw all white triangles
+    document.querySelectorAll('.white-triangle-canvas').forEach(canvas => {
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.moveTo(48, 0);
+        ctx.lineTo(48, 48);
+        ctx.lineTo(0, 48);
+        ctx.lineTo(0, 8);
+        ctx.arcTo(0, 0, 8, 0, 8);
+        ctx.lineTo(48, 0);
+        ctx.closePath();
+        ctx.fill();
+    });
+
+    // Draw all gray folds
+    document.querySelectorAll('.gray-fold-canvas').forEach(canvas => {
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#e8e8e8';
+        ctx.beginPath();
+        ctx.moveTo(60, 0);
+        ctx.lineTo(60, 60);
+        ctx.lineTo(0, 60);
+        ctx.lineTo(0, 10);
+        ctx.arcTo(0, 0, 10, 0, 10);
+        ctx.lineTo(60, 0);
+        ctx.closePath();
+        ctx.fill();
+    });
+});
+</script>

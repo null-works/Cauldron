@@ -1,0 +1,5 @@
+static-pages:
+    index: {  }
+    carousel:
+        carousel-1: {  }
+        carousel-2: {  }

@@ -1,0 +1,6 @@
+name: Panic Purple
+description: Dark Purple WinterCMS theme inspired by Grabby Paws
+author: StoryCraft.ink
+homepage: https://systempanic.ca
+version: 0.5.0
+parent: blocks

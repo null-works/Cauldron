@@ -1,0 +1,159 @@
+<div class="video-player bg-panic-dark border-2 border-panic-purple/50 rounded-lg overflow-hidden hover:border-panic-cyan transition-all duration-300" style="box-shadow: 0 4px 15px var(--panic-glow);">
+    {% if content.video_url %}
+        {% set isYouTube = 'youtube.com' in content.video_url or 'youtu.be' in content.video_url %}
+        {% set isVimeo = 'vimeo.com' in content.video_url %}
+        
+        {% if isYouTube %}
+            {% if 'watch?v=' in content.video_url %}
+                {% set videoId = content.video_url|split('watch?v=')|last|split('&')|first %}
+            {% else %}
+                {% set videoId = content.video_url|split('youtu.be/')|last|split('?')|first %}
+            {% endif %}
+            
+            <div class="video-container relative w-full h-48" data-video-id="{{ videoId }}">
+                <img src="https://img.youtube.com/vi/{{ videoId }}/maxresdefault.jpg" 
+                     class="w-full h-48 object-cover video-thumbnail" 
+                     alt="Video thumbnail">
+                <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center video-overlay">
+                    <button class="play-button bg-panic-purple hover:bg-panic-cyan text-white rounded-full p-4 transition-all duration-300">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    </button>
+                </div>
+                <iframe class="w-full h-48 video-frame hidden" 
+                        frameborder="0" 
+                        allowfullscreen>
+                </iframe>
+            </div>
+        {% elseif isVimeo %}
+            {% set videoId = content.video_url|split('vimeo.com/')|last|split('?')|first %}
+            <iframe 
+                src="https://player.vimeo.com/video/{{ videoId }}?autoplay={{ content.autoplay ? '1' : '0' }}&muted={{ content.muted ? '1' : '0' }}"
+                class="w-full h-48"
+                frameborder="0"
+                allowfullscreen>
+            </iframe>
+        {% else %}
+            <video 
+                class="w-full h-48 object-cover direct-video"
+                {% if content.poster_image %}poster="{{ content.poster_image | media }}"{% endif %}
+                {% if content.autoplay %}autoplay{% endif %}
+                {% if content.muted %}muted{% endif %}
+                {% if content.controls %}controls{% endif %}
+                loop>
+                <source src="{{ content.video_url | media }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        {% endif %}
+    {% else %}
+        <div class="w-full h-48 bg-gradient-to-br from-panic-dark to-panic-deep flex items-center justify-center">
+            <p class="text-panic-purple">No video URL provided</p>
+        </div>
+    {% endif %}
+    
+    {% if content.title %}
+        <div class="p-3">
+            <h4 class="text-panic-text font-medium">{{ content.title }}</h4>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle YouTube video clicks
+    document.querySelectorAll('.video-container').forEach(container => {
+        const playButton = container.querySelector('.play-button');
+        const overlay = container.querySelector('.video-overlay');
+        const thumbnail = container.querySelector('.video-thumbnail');
+        const iframe = container.querySelector('.video-frame');
+        const videoId = container.dataset.videoId;
+        
+        if (playButton) {
+            playButton.addEventListener('click', function() {
+                console.log('Video play button clicked');
+                
+                // Signal to gallery that video is playing
+                if (window.galleryVideoPlaying !== undefined) {
+                    window.galleryVideoPlaying = true;
+                    console.log('Set galleryVideoPlaying to true');
+                }
+                
+                // Load the actual video
+                iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                iframe.classList.remove('hidden');
+                overlay.style.display = 'none';
+                thumbnail.style.display = 'none';
+                
+                // Add pause detection
+                setupPauseDetection(iframe);
+            });
+        }
+    });
+    
+    // Setup pause detection for YouTube videos
+    function setupPauseDetection(iframe) {
+        // Method 1: Detect when user clicks away from video area
+        document.addEventListener('click', function clickOutside(e) {
+            if (!iframe.contains(e.target) && !e.target.closest('.video-container')) {
+                console.log('Clicked outside video - assuming paused');
+                if (window.galleryVideoPlaying !== undefined) {
+                    window.galleryVideoPlaying = false;
+                }
+            }
+        });
+        
+        // Method 2: Detect when window loses focus (user might have paused)
+        window.addEventListener('blur', function windowBlur() {
+            setTimeout(() => {
+                console.log('Window lost focus - checking if video still playing');
+                if (window.galleryVideoPlaying !== undefined) {
+                    window.galleryVideoPlaying = false;
+                }
+            }, 1000);
+        });
+        
+        // Method 3: Assume video ends after reasonable time (fallback)
+        setTimeout(() => {
+            console.log('Video timeout - assuming ended');
+            if (window.galleryVideoPlaying !== undefined) {
+                window.galleryVideoPlaying = false;
+            }
+        }, 300000); // 5 minutes
+        
+        // Method 4: Listen for ESC key (common pause shortcut)
+        document.addEventListener('keydown', function escKey(e) {
+            if (e.key === 'Escape') {
+                console.log('ESC pressed - assuming video paused');
+                if (window.galleryVideoPlaying !== undefined) {
+                    window.galleryVideoPlaying = false;
+                }
+            }
+        });
+    }
+    
+    // Handle direct video play/pause
+    document.querySelectorAll('.direct-video').forEach(video => {
+        video.addEventListener('play', () => {
+            console.log('Direct video playing');
+            if (window.galleryVideoPlaying !== undefined) {
+                window.galleryVideoPlaying = true;
+            }
+        });
+        
+        video.addEventListener('pause', () => {
+            console.log('Direct video paused');
+            if (window.galleryVideoPlaying !== undefined) {
+                window.galleryVideoPlaying = false;
+            }
+        });
+        
+        video.addEventListener('ended', () => {
+            console.log('Direct video ended');
+            if (window.galleryVideoPlaying !== undefined) {
+                window.galleryVideoPlaying = false;
+            }
+        });
+    });
+});
+</script>

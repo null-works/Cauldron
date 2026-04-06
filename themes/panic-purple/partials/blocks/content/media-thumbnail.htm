@@ -1,0 +1,12 @@
+<div class="media-thumbnail bg-panic-dark border border-panic-purple/30 rounded-lg overflow-hidden hover:border-panic-cyan/50 transition-all duration-300">
+    {% if content.image %}
+        <img src="{{ content.image | media }}" 
+             alt="{{ content.title }}" 
+             class="w-full h-48 object-cover">
+    {% endif %}
+    {% if content.title %}
+        <div class="p-3">
+            <h4 class="text-panic-text font-medium">{{ content.title }}</h4>
+        </div>
+    {% endif %}
+</div>

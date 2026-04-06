@@ -1,0 +1,192 @@
+
+text:
+    name: Simple text
+    description: simple text without html tags
+    icon: icon-file-text-o
+    fields:
+        content:
+            label: Content
+            span: left
+            type: textarea
+            size: small
+        textSize:
+            label: Text size
+            span: right
+            type: dropdown
+            emptyOption: -- none --
+            options:
+                'text-sm': 'tiny'
+                'text-md': 'small'
+                'text-base': 'normal'
+                'text-lg': 'huge'
+                'text-xl': 'large'
+                'text-2xl': 'larger'
+        textAlign:
+            label: Alignment
+            span: right
+            type: dropdown
+            emptyOption: -- none --
+            options:
+                'text-left': 'left'
+                'text-center': 'center'
+                'text-right': 'right'
+
+html:
+    name: HTML text
+    description: formated HTML
+    icon: icon-file-code-o
+    fields:
+        content:
+            label: HTML content
+            span: full
+            type: richeditor
+            toolbarButtons: ['paragraphFormat','paragraphStyle','quote','bold','italic','underline','strikeThrough','superscript','color','align','formatOL','formatUL','insertLink','insertHR','|','clearFormatting','html']
+
+image:
+    name: Image
+    description: simple image
+    icon: icon-file-image-o
+    fields:
+        image_mode:
+            label: Image from media
+            comment: use media manage resource
+            span: full
+            type: switch
+            default: true
+        image_alt:
+            label: Alt text
+            span: right
+        image:
+            label: Image
+            type: mediafinder
+            mode: image
+            span: left
+            imageWidth: 220
+            imageHeight: 220
+            trigger:
+                action: show
+                field: image_mode
+                condition: checked
+        image_url:
+            label: Image URL
+            comment: 'ex: https://unsplash.com/photos/DGH1u80sZik/download?w=640'
+            type: text
+            span: left
+            trigger:
+                action: show
+                field: image_mode
+                condition: unchecked
+        image_css:
+            label: Css classes
+            comment: classes to add to image
+            span: right
+
+card:
+    name: Card w/ icon
+    description: display dentered cards w/ icon
+    icon: icon-id-card-o
+    fields:
+        iconName:
+            label: Material.io icon name
+            comment: 'https://material.io/resources/icons/'
+            type: text
+            span: left
+        title:
+            label: Title
+            type: text
+            span: right
+        cssClasses:
+            label: CSS classes to apply to card
+            type: textarea
+            span: left
+            size: tiny
+        description:
+            label: Description
+            type: textarea
+            span: right
+            size: tiny
+
+media-thumbnail:
+    name: Media Thumbnail
+    description: Image or video thumbnail for gallery
+    icon: icon-play-circle
+    fields:
+        media_type:
+            label: Media Type
+            type: dropdown
+            span: left
+            options:
+                'image': 'Image'
+                'video': 'Video'
+        title:
+            label: Title
+            type: text
+            span: right
+        image:
+            label: Image/Thumbnail
+            type: mediafinder
+            mode: image
+            span: full
+
+
+post-preview:
+    name: Post Preview
+    description: Blog post or dev update preview card
+    icon: icon-file-text
+    fields:
+        image:
+            label: Preview Image
+            type: mediafinder
+            mode: image
+            span: full
+        title:
+            label: Post Title
+            type: text
+            span: left
+        excerpt:
+            label: Excerpt
+            type: textarea
+            size: small
+            span: right
+        date:
+            label: Date
+            type: text
+            span: left
+        link_url:
+            label: Link URL
+            type: text
+            span: right
+video-player:
+    name: Video Player
+    description: Embedded video player with controls
+    icon: icon-play-circle-o
+    fields:
+        video_url:
+            label: Video URL
+            comment: YouTube, Vimeo URL or direct video file path
+            type: text
+            span: left
+        poster_image:
+            label: Poster/Thumbnail Image
+            type: mediafinder
+            mode: image
+            span: right
+        title:
+            label: Video Title
+            type: text
+            span: left
+        autoplay:
+            label: Autoplay
+            type: switch
+            default: false
+            span: right
+        muted:
+            label: Start Muted
+            type: switch
+            default: true
+            span: left
+        controls:
+            label: Show Controls
+            type: switch
+            default: true
+            span: right

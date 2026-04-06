@@ -1,0 +1,122 @@
+/* Panic Purple Theme - Grabby Paws Inspired */
+:root {
+  /* Core Panic Purple palette from game UI */
+  --panic-deep: #2D1B69;
+  --panic-dark: #1E1B31;
+  --panic-purple: #8B5CF6;
+  --panic-pink: #E879F9;
+  --panic-orange: #F97316;
+  --panic-yellow: #EAB308;
+  --panic-cyan: #06B6D4;
+  --panic-text: #E5E7EB;
+  --panic-text-bright: #FFFFFF;
+  --panic-glow: rgba(139, 92, 246, 0.3);
+}
+
+/* Base theming */
+html body {
+  background: red!important;
+  color: var(--panic-text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Container with game panel styling */
+.container {
+  background: linear-gradient(135deg, var(--panic-dark) 0%, var(--panic-deep) 100%);
+  border-radius: 12px;
+  box-shadow: 0 0 20px var(--panic-glow);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  margin-bottom: 20px;
+}
+
+/* Typography */
+.prose {
+  color: var(--panic-text-bright);
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  color: var(--panic-purple);
+  text-shadow: 0 0 10px var(--panic-glow);
+}
+
+/* Gaming-style links */
+.prose a {
+  color: var(--panic-cyan);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.prose a:hover {
+  color: var(--panic-pink);
+  text-shadow: 0 0 8px var(--panic-pink);
+  border-bottom: 1px solid var(--panic-pink);
+}
+
+/* Game UI inspired buttons */
+.btn, button, input[type="submit"] {
+  background: linear-gradient(135deg, var(--panic-purple) 0%, var(--panic-pink) 100%);
+  border: none;
+  border-radius: 8px;
+  color: var(--panic-text-bright);
+  padding: 12px 24px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px var(--panic-glow);
+  cursor: pointer;
+}
+
+.btn:hover, button:hover, input[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+  background: linear-gradient(135deg, var(--panic-pink) 0%, var(--panic-purple) 100%);
+}
+
+/* Header styling */
+header {
+  background: var(--panic-dark);
+  border-bottom: 2px solid var(--panic-purple);
+  box-shadow: 0 2px 10px var(--panic-glow);
+}
+
+/* Navigation */
+nav a {
+  color: var(--panic-text);
+  transition: all 0.3s ease;
+  padding: 8px 16px;
+  border-radius: 6px;
+}
+
+nav a:hover {
+  color: var(--panic-cyan);
+  background: rgba(139, 92, 246, 0.1);
+}
+
+/* Game-style cards/blocks */
+.block, .card {
+  background: var(--panic-dark);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
+  padding: 20px;
+  margin: 15px 0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Accent colors for variety */
+.accent-orange { color: var(--panic-orange); }
+.accent-yellow { color: var(--panic-yellow); }
+.accent-cyan { color: var(--panic-cyan); }
+.accent-pink { color: var(--panic-pink); }
+
+/* Glowing effects for special elements */
+.glow {
+  box-shadow: 0 0 20px var(--panic-glow);
+}
+
+/* Footer styling */
+footer {
+  background: var(--panic-dark);
+  border-top: 1px solid var(--panic-purple);
+  margin-top: 40px;
+  padding: 20px 0;
+}

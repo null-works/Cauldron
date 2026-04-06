@@ -1,0 +1,200 @@
+<section class="media-gallery" style="padding-top: 0; padding-bottom: 0; margin-top: -20px; position: relative;">
+    <!-- Techy Peeling Badge -->
+    <div style="position: absolute; top: -35px; left: -50px; z-index: 10; transform: rotate(-8deg);">
+        <div style="
+            background: linear-gradient(135deg, #00ff88 0%, #00ccff 50%, #6366f1 100%);
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 
+                6px 6px 0px #000,
+                12px 12px 20px rgba(0,0,0,0.4),
+                inset 0 2px 0 rgba(255,255,255,0.3);
+            border: 3px solid #000;
+            position: relative;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 18px;
+            color: #000;
+            text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+            transform: perspective(150px) rotateX(5deg) rotateY(-2deg);
+        ">
+            OGGLABLES
+            <!-- Page curl effect -->
+            <div style="
+                position: absolute;
+                top: -2px;
+                right: -2px;
+                width: 12px;
+                height: 12px;
+                background: linear-gradient(225deg, #fff 0%, #ddd 50%, #999 100%);
+                border-radius: 0 0 0 100%;
+                box-shadow: -2px 2px 4px rgba(0,0,0,0.2);
+            "></div>
+            <!-- Circuit pattern overlay -->
+            <div style="
+                position: absolute;
+                top: 2px;
+                left: 2px;
+                right: 2px;
+                bottom: 2px;
+                background-image: 
+                    linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px),
+                    linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px);
+                background-size: 8px 8px;
+                pointer-events: none;
+                border-radius: 4px;
+            "></div>
+        </div>
+    </div>
+    
+    {% if data.title %}
+        <h2 class="text-3xl font-bold text-panic-purple mb-8 text-center glow">{{ data.title }}</h2>
+    {% endif %}
+    
+    <div class="media-scroll-container overflow-hidden pb-4" id="scroll-container" style="scrollbar-width: none; -ms-overflow-style: none;">
+        <div class="flex gap-6" id="media-content">
+            {% for item in data.content %}
+                <div class="flex-none widget-container">
+                    {% partial 'blocks/content/' ~ item._group content=item %}
+                </div>
+            {% endfor %}
+            {% for item in data.content %}
+                <div class="flex-none widget-container">
+                    {% partial 'blocks/content/' ~ item._group content=item %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<style>
+.media-gallery div::-webkit-scrollbar {
+    display: none;
+}
+
+.widget-container {
+    width: 320px !important;
+    height: 220px !important;
+    overflow: visible;
+    border-radius: 8px;
+    background: var(--panic-dark);
+    border: 2px solid rgba(168, 85, 247, 0.3);
+    position: relative;
+}
+
+.widget-container > * {
+    width: 320px !important;
+    height: 220px !important;
+    max-width: 320px !important;
+    max-height: 220px !important;
+    object-fit: cover !important;
+    box-sizing: border-box !important;
+    border-radius: 8px !important;
+}
+
+/* Force all child elements to fill the container uniformly */
+.widget-container .video-player,
+.widget-container .video-container,
+.widget-container iframe,
+.widget-container img,
+.widget-container div {
+    width: 320px !important;
+    height: 220px !important;
+    max-width: 320px !important;
+    max-height: 220px !important;
+}
+
+/* YouTube iframe specific sizing to show controls */
+.widget-container .video-frame {
+    height: 220px !important;
+    width: 320px !important;
+}
+</style>
+
+<script>
+// Global video state
+window.galleryVideoPlaying = false;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('scroll-container');
+    const content = document.getElementById('media-content');
+    let userInteracting = false;
+    let scrollPosition = 0;
+    let animationId;
+    
+    const itemWidth = 344; // 320px width + 24px gap
+    const originalItemCount = {{ data.content|length }};
+    const resetPoint = itemWidth * originalItemCount;
+    
+    function autoScroll() {
+        if (!userInteracting && !window.galleryVideoPlaying) {
+            scrollPosition += 0.5;
+            
+            if (scrollPosition >= resetPoint) {
+                scrollPosition = 0;
+            }
+            
+            content.style.transform = `translateX(-${scrollPosition}px)`;
+        }
+        
+        animationId = requestAnimationFrame(autoScroll);
+    }
+    
+    // Start auto-scroll after 3 seconds
+    setTimeout(() => {
+        console.log('Starting auto-scroll');
+        autoScroll();
+    }, 3000);
+    
+    // Pause on user interaction
+    container.addEventListener('mouseenter', () => { userInteracting = true; });
+    container.addEventListener('mouseleave', () => { 
+        setTimeout(() => { userInteracting = false; }, 2000);
+    });
+    
+    // Manual scroll handling - BOTH wheel and touch
+    let isScrolling = false;
+    let startX = 0;
+    
+    // Mouse wheel scrolling
+    container.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        userInteracting = true;
+        
+        scrollPosition += e.deltaX || e.deltaY;
+        
+        if (scrollPosition < 0) scrollPosition = resetPoint + scrollPosition;
+        if (scrollPosition >= resetPoint) scrollPosition = scrollPosition - resetPoint;
+        
+        content.style.transform = `translateX(-${scrollPosition}px)`;
+        
+        clearTimeout(isScrolling);
+        isScrolling = setTimeout(() => { userInteracting = false; }, 3000);
+    });
+    
+    // Touch scrolling
+    container.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        userInteracting = true;
+    });
+    
+    container.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const currentX = e.touches[0].clientX;
+        const deltaX = startX - currentX;
+        
+        scrollPosition += deltaX;
+        startX = currentX;
+        
+        if (scrollPosition < 0) scrollPosition = resetPoint + scrollPosition;
+        if (scrollPosition >= resetPoint) scrollPosition = scrollPosition - resetPoint;
+        
+        content.style.transform = `translateX(-${scrollPosition}px)`;
+    });
+    
+    container.addEventListener('touchend', () => {
+        clearTimeout(isScrolling);
+        isScrolling = setTimeout(() => { userInteracting = false; }, 3000);
+    });
+});
+</script>

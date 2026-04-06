@@ -1,0 +1,27 @@
+<div class="post-preview relative rounded-lg overflow-hidden border-2 border-panic-purple/50 hover:border-panic-cyan transition-all duration-300" style="box-shadow: 0 4px 15px var(--panic-glow);">
+    {% if content.image %}
+        <img src="{{ content.image | media }}" alt="{{ content.title }}" class="w-full h-48 object-cover">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+    {% else %}
+        <div class="w-full h-48 bg-gradient-to-br from-panic-dark to-panic-deep"></div>
+    {% endif %}
+    
+    <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+        {% if content.title %}
+            <h4 class="text-white font-bold text-lg mb-2 drop-shadow-lg">{{ content.title }}</h4>
+        {% endif %}
+        {% if content.excerpt %}
+            <p class="text-gray-200 text-sm mb-3 leading-relaxed">{{ content.excerpt }}</p>
+        {% endif %}
+        {% if content.date %}
+            <div class="flex items-center justify-between">
+                <p class="text-panic-cyan text-xs font-mono">{{ content.date }}</p>
+                {% if content.link_url %}
+                    <a href="{{ content.link_url }}" class="text-panic-pink text-sm hover:text-panic-cyan transition-colors font-medium">
+                        Read More →
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
