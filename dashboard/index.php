@@ -12,17 +12,9 @@ $error = '';
 if ($_POST) {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
-    
-    // Simple hardcoded credentials for now
-    // TODO: Move to database/config file
-    if ($username === 'admin' && $password === 'systempanic2024') {
-        $_SESSION['logged_in'] = true;
-        $_SESSION['username'] = $username;
-        header('Location: dashboard.php');
-        exit();
-    } else {
-        $error = 'Invalid credentials';
-    }
+
+    // TODO: Implement proper authentication (e.g. database-backed or integrate with Winter CMS backend auth)
+    $error = 'Authentication not configured';
 }
 ?>
 <!DOCTYPE html>
