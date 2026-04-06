@@ -6,9 +6,6 @@
 
     RewriteEngine On
 
-# Bypass Winter CMS for dashboard directory
-RewriteRule ^dashboard/ - [L]
-
     ##
     ## You may need to uncomment the following line for some hosting environments,
     ## if you have installed to a subdirectory, enter the name here also.
