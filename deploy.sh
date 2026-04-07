@@ -22,7 +22,7 @@ echo "Setting permissions..."
 # Detect the site owner from the parent directory
 SITE_USER=$(stat -c '%U' .)
 SITE_GROUP=$(stat -c '%G' .)
-chown -R "${SITE_USER}:${SITE_GROUP}" storage bootstrap/cache
-chmod -R 775 storage bootstrap/cache
+chown -R "${SITE_USER}:${SITE_GROUP}" storage bootstrap/cache themes plugins
+chmod -R 775 storage bootstrap/cache themes plugins
 
 echo "Deploy complete."
