@@ -143,6 +143,103 @@ model-viewer:
             default: false
             span: left
 
+model-gallery:
+    name: 3D Model Gallery
+    description: Grid of interactive 3D models with sticker-card styling
+    icon: icon-cubes
+    fields:
+        title:
+            label: Section Title
+            type: text
+            span: left
+        subtitle:
+            label: Subtitle
+            type: text
+            span: right
+        layout:
+            label: Grid Layout
+            type: dropdown
+            options:
+                '2x2': '2 columns'
+                '3x2': '3 columns'
+                '4x2': '4 columns'
+            default: '3x2'
+            span: left
+        model_height:
+            label: Model Height (px)
+            type: number
+            default: 280
+            span: right
+        auto_rotate:
+            label: Auto Rotate
+            type: switch
+            default: true
+            span: left
+        camera_controls:
+            label: Camera Controls
+            type: switch
+            default: true
+            span: right
+        rotation_speed:
+            label: Rotation Speed
+            type: dropdown
+            options:
+                '15deg': 'Slow'
+                '30deg': 'Normal'
+                '60deg': 'Fast'
+            default: '30deg'
+            span: left
+        background:
+            label: Model Background
+            type: dropdown
+            options:
+                theme: 'Match theme (dark purple)'
+                transparent: 'Transparent'
+                black: 'Black'
+                gradient: 'Purple gradient'
+            default: theme
+            span: right
+        card_padding:
+            label: Card Padding (px)
+            type: number
+            default: 12
+            span: left
+        grid_gap:
+            label: Grid Gap (px)
+            type: number
+            default: 8
+            span: right
+        show_fold:
+            label: Show folded corner
+            type: switch
+            default: true
+            span: left
+        jaunty_angles:
+            label: Jaunty?
+            type: switch
+            default: true
+            span: right
+        models:
+            type: repeater
+            prompt: Add model
+            style: accordion
+            form:
+                fields:
+                    model_file:
+                        label: Model File (.glb)
+                        type: mediafinder
+                        mode: file
+                        span: full
+                    title:
+                        label: Title
+                        type: text
+                        span: left
+                    description:
+                        label: Short Description
+                        type: textarea
+                        size: small
+                        span: right
+
 image-gallery:
     name: Image Gallery
     description: Grid of images with sticker-card styling, jaunty angles, and folded corners
