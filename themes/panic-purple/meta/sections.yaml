@@ -117,11 +117,11 @@ image-gallery:
             default: manual
             span: right
         media_folder:
-            label: Media Folder Path
-            comment: "Path inside Media Manager, e.g. gallery or screenshots/v2"
-            type: text
+            label: Select Folder
+            comment: Pick a folder from the Media Manager
+            type: mediafinder
+            mode: folder
             span: full
-            placeholder: "gallery"
             trigger:
                 action: show
                 field: source
