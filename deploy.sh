@@ -19,7 +19,10 @@ php artisan config:clear
 php artisan view:clear
 
 echo "Setting permissions..."
-chown -R www-data:www-data storage bootstrap/cache
+# Detect the site owner from the parent directory
+SITE_USER=$(stat -c '%U' .)
+SITE_GROUP=$(stat -c '%G' .)
+chown -R "${SITE_USER}:${SITE_GROUP}" storage bootstrap/cache
 chmod -R 775 storage bootstrap/cache
 
 echo "Deploy complete."
