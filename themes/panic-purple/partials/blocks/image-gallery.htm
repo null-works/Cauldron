@@ -54,6 +54,8 @@ function onStart()
 {% set jaunty = data.jaunty_angles is not same as(false) %}
 {% set foldSize = pad|number_format > 6 ? 60 : 30 %}
 {% set innerFold = pad|number_format > 6 ? 48 : 24 %}
+{% set perPage = data.per_page|default(0) %}
+{% set galleryId = 'ig-' ~ random() %}
 
 <style>
 .ig-sticker-card {
@@ -216,12 +218,12 @@ function onStart()
         </div>
     {% endif %}
 
-    <div class="grid {{ gridCols }} max-w-6xl mx-auto" style="padding: 20px 0; gap: {{ gap }}px;">
+    <div id="{{ galleryId }}" class="grid {{ gridCols }} max-w-6xl mx-auto" style="padding: 20px 0; gap: {{ gap }}px;" data-per-page="{{ perPage }}">
         {% for item in galleryImages %}
             {% set rotation = jaunty ? (loop.index is odd ? 'rotate(-2deg)' : 'rotate(2deg)') : 'rotate(0)' %}
             {% set tag = item.link_url ? 'a' : 'div' %}
 
-            <{{ tag }} {% if item.link_url %}href="{{ item.link_url }}"{% endif %} class="ig-sticker-card" style="transform: {{ rotation }};">
+            <{{ tag }} {% if item.link_url %}href="{{ item.link_url }}"{% endif %} class="ig-sticker-card ig-item" style="transform: {{ rotation }};">
                 <div class="ig-card-container">
                     {% if showFold %}
                     <div class="ig-white-tri">
@@ -234,7 +236,7 @@ function onStart()
 
                     <div class="ig-image-box">
                         {% if item.image %}
-                            <img src="{{ item.image|media }}" alt="{{ item.title }}">
+                            <img src="{{ item.image|media }}" alt="{{ item.title }}" loading="lazy">
                         {% else %}
                             <div class="ig-placeholder">
                                 <i class="icon-picture-o"></i>
@@ -264,6 +266,18 @@ function onStart()
             <p class="text-panic-text/80 col-span-full text-center">No images added yet.</p>
         {% endfor %}
     </div>
+
+    {% if perPage > 0 and galleryImages|length > perPage %}
+    <div class="ig-pagination flex items-center justify-center gap-3 mt-6" data-gallery="{{ galleryId }}">
+        <button class="ig-page-prev px-4 py-2 rounded-lg text-white transition-all duration-200" style="background: linear-gradient(135deg, var(--panic-purple), var(--panic-pink));" disabled>
+            &larr; Prev
+        </button>
+        <span class="ig-page-info text-[--panic-text] text-sm"></span>
+        <button class="ig-page-next px-4 py-2 rounded-lg text-white transition-all duration-200" style="background: linear-gradient(135deg, var(--panic-purple), var(--panic-pink));">
+            Next &rarr;
+        </button>
+    </div>
+    {% endif %}
 </section>
 
 <script>
@@ -296,6 +310,43 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx.lineTo(s, 0);
         ctx.closePath();
         ctx.fill();
+    });
+
+    // Pagination
+    document.querySelectorAll('.ig-pagination').forEach(pag => {
+        const gridId = pag.dataset.gallery;
+        const grid = document.getElementById(gridId);
+        if (!grid) return;
+
+        const perPage = parseInt(grid.dataset.perPage) || 0;
+        if (perPage <= 0) return;
+
+        const items = grid.querySelectorAll('.ig-item');
+        const totalPages = Math.ceil(items.length / perPage);
+        let currentPage = 1;
+
+        const prevBtn = pag.querySelector('.ig-page-prev');
+        const nextBtn = pag.querySelector('.ig-page-next');
+        const info = pag.querySelector('.ig-page-info');
+
+        function showPage(page) {
+            currentPage = page;
+            items.forEach((item, i) => {
+                const start = (page - 1) * perPage;
+                const end = start + perPage;
+                item.style.display = (i >= start && i < end) ? '' : 'none';
+            });
+            prevBtn.disabled = page <= 1;
+            nextBtn.disabled = page >= totalPages;
+            prevBtn.style.opacity = page <= 1 ? '0.4' : '1';
+            nextBtn.style.opacity = page >= totalPages ? '0.4' : '1';
+            info.textContent = page + ' / ' + totalPages;
+        }
+
+        prevBtn.addEventListener('click', () => { if (currentPage > 1) showPage(currentPage - 1); });
+        nextBtn.addEventListener('click', () => { if (currentPage < totalPages) showPage(currentPage + 1); });
+
+        showPage(1);
     });
 });
 </script>
