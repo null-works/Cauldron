@@ -473,4 +473,25 @@ return [
     */
 
     'enableBackendServiceWorkers' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Allowed file types
+    |--------------------------------------------------------------------------
+    |
+    | Extends the default allowed file upload types to include 3D model
+    | formats (GLB/glTF) for the model viewer block.
+    |
+    */
+
+    'fileDefinitions' => [
+        'defaultExtensions' => [
+            'jpg', 'jpeg', 'bmp', 'png', 'webp', 'gif', 'svg', 'avif',
+            'mp4', 'avi', 'mov', 'mpg', 'mpeg', 'mkv', 'webm',
+            'mp3', 'ogg', 'wav', 'wma', 'aac', 'flac',
+            'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'csv',
+            'zip', 'rar', '7z', 'tar', 'gz',
+            'glb', 'gltf',
+        ],
+    ],
 ];
