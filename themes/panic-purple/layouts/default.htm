@@ -34,13 +34,19 @@ categoryPage = "blog/category"
         {variable name="_dummy" type="text"}{/variable}
     {/repeater}
     {% partial 'header' %}
-    {% partial 'hero-carousel' %}
+    {% for section in sections %}
+        {% if section._group == 'hero-carousel' %}
+            {% partial 'blocks/hero-carousel' data=section %}
+        {% endif %}
+    {% endfor %}
     <main class="container px-6 mx-auto">
         <div class="py-6 prose max-w-none">
         {% page %}
         </div>
         {% for section in sections %}
-            {% partial 'blocks/' ~ section._group data=section %}
+            {% if section._group != 'hero-carousel' %}
+                {% partial 'blocks/' ~ section._group data=section %}
+            {% endif %}
         {% endfor %}
     </main>
     {% partial 'footer' %}

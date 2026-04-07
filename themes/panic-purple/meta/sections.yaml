@@ -1,3 +1,91 @@
+hero-carousel:
+    name: Hero Carousel
+    description: Full-width hero carousel with slides containing text, video, and bokeh particles
+    icon: icon-film
+    fields:
+        slides:
+            type: repeater
+            prompt: Add slide
+            style: accordion
+            form:
+                fields:
+                    heading:
+                        label: Heading
+                        type: text
+                        span: left
+                        placeholder: "Grabby Paws"
+                    status_label:
+                        label: Status Bar Label
+                        type: text
+                        span: right
+                        placeholder: "> STATUS_REPORT"
+                        default: "> STATUS_REPORT"
+                    description:
+                        label: Short Description
+                        type: textarea
+                        size: small
+                        span: full
+                    details:
+                        label: Details Text
+                        comment: Additional paragraph below the description
+                        type: textarea
+                        size: small
+                        span: full
+                    features_heading:
+                        label: Features Heading
+                        type: text
+                        span: left
+                        placeholder: "Key Features:"
+                    features_list:
+                        label: Features (one per line)
+                        comment: Each line becomes a bullet point
+                        type: textarea
+                        size: small
+                        span: right
+                    button_text:
+                        label: Button Text
+                        type: text
+                        span: left
+                        placeholder: "Learn More"
+                    button_url:
+                        label: Button URL
+                        type: text
+                        span: right
+                        placeholder: "https://..."
+                    show_video:
+                        label: Show Video Panel
+                        type: switch
+                        default: true
+                        span: left
+                    video_url:
+                        label: Video URL
+                        comment: Direct link to MP4 or video file
+                        type: text
+                        span: right
+                        placeholder: "https://example.com/trailer.mp4"
+                        trigger:
+                            action: show
+                            field: show_video
+                            condition: checked
+                    video_autoplay:
+                        label: Autoplay
+                        type: switch
+                        default: true
+                        span: left
+                        trigger:
+                            action: show
+                            field: show_video
+                            condition: checked
+                    video_muted:
+                        label: Start Muted
+                        type: switch
+                        default: true
+                        span: right
+                        trigger:
+                            action: show
+                            field: show_video
+                            condition: checked
+
 section:
     name: 1 column
     description: 1 column for blocks

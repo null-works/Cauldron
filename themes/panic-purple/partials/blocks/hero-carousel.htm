@@ -1,0 +1,211 @@
+{% set slides = data.slides %}
+
+{% if slides|length %}
+<div id="carousel-container" class="relative w-full h-[70vh] overflow-hidden rounded-lg shadow-xl">
+    <div id="carousel-slides" class="flex transition-transform duration-500 ease-in-out w-full h-full">
+        {% for slide in slides %}
+        <div class="carousel-item flex-none w-full h-full relative bg-gradient-to-br from-[--panic-dark] to-[--panic-deep] text-[--panic-text] overflow-hidden">
+            <div class="max-w-screen-2xl w-full mx-auto h-full flex flex-col md:flex-row gap-16 px-16">
+                <div class="w-full {{ slide.show_video ? 'md:w-1/2' : 'md:w-2/3 md:mx-auto' }} flex flex-col justify-center text-center md:text-left z-10">
+
+                    <div class="bg-black/30 border-2 border-[--panic-purple] px-6 md:px-8 py-8 rounded-xl w-full backdrop-blur-md" style="box-shadow: 0 0 20px var(--panic-glow);">
+                        <div class="flex justify-between items-center pb-3 mb-3 border-b border-[--panic-purple]/50">
+                            <p class="font-mono text-sm text-[--panic-cyan]">{{ slide.status_label|default('> STATUS_REPORT') }}</p>
+                            <div class="flex items-center space-x-1.5">
+                                <div class="w-3 h-3 border-2 border-[--panic-purple]"></div>
+                                <div class="w-3 h-3 border-2 border-[--panic-purple] bg-[--panic-purple]"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            {% if slide.heading %}
+                            <h1 class="text-4xl md:text-5xl font-bold text-[--panic-purple]" style="text-shadow: 0 0 15px var(--panic-glow);">
+                                {{ slide.heading }}
+                            </h1>
+                            {% endif %}
+
+                            {% if slide.description %}
+                            <p class="mt-2 text-lg md:text-xl text-[--panic-text] leading-snug">
+                                {{ slide.description }}
+                            </p>
+                            {% endif %}
+
+                            {% if slide.details %}
+                            <p class="mt-3 text-base text-[--panic-text]/80 leading-snug">
+                                {{ slide.details }}
+                            </p>
+                            {% endif %}
+
+                            {% if slide.features_heading or slide.features_list or slide.button_text %}
+                            <div class="mt-6 border-t border-[--panic-purple]/50 pt-3">
+                                {% if slide.features_heading %}
+                                <h3 class="font-semibold text-[--panic-pink]">{{ slide.features_heading }}</h3>
+                                {% endif %}
+
+                                {% if slide.features_list %}
+                                <ul class="list-disc list-inside mt-1 text-base text-[--panic-text]/90 space-y-1 leading-snug mb-8">
+                                    {% for feature in slide.features_list|split('\n') %}
+                                        {% if feature|trim %}
+                                        <li>{{ feature|trim }}</li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+
+                                {% if slide.button_text %}
+                                <a href="{{ slide.button_url|default('#') }}" class="btn">
+                                    {{ slide.button_text }}
+                                </a>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+
+                {% if slide.show_video and slide.video_url %}
+                <div class="w-full md:w-1/2 flex items-center justify-center z-10">
+                    <div class="relative floating-image w-full max-w-2xl">
+                        <img src="{{ 'assets/img/teleframe.png'|theme }}"
+                             alt="Retro TV frame for video trailer"
+                             class="relative z-10 w-full h-auto pointer-events-none rounded-2xl"
+                             style="filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 1));">
+
+                        <video class="carousel-video absolute rounded-[2%]"
+                               style="width: 75%; aspect-ratio: 4 / 3; top: 11%; left: 7%; object-fit: fill; z-index: 5; box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.7);"
+                               src="{{ slide.video_url }}"
+                               {{ slide.video_autoplay ? 'autoplay' : '' }} loop {{ slide.video_muted is not same as(false) ? 'muted' : '' }} playsinline>
+                            Your browser does not support the video tag.
+                        </video>
+
+                        <div class="carousel-video-controls absolute flex items-center space-x-2 z-20" style="bottom: 17%; left: 11%;">
+                            <button class="video-play-pause p-2 bg-black bg-opacity-50 rounded-full text-white hover:bg-opacity-75 transition-all duration-200">
+                                <svg class="pause-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v4a1 1 0 11-2 0V8z" clip-rule="evenodd"></path></svg>
+                                <svg class="play-icon w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                            </button>
+                            <button class="video-mute p-2 bg-black bg-opacity-50 rounded-full text-white hover:bg-opacity-75 transition-all duration-200">
+                                <svg class="unmute-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                <svg class="mute-icon w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM12.293 7.293a1 1 0 011.414 0L15 8.586l1.293-1.293a1 1 0 111.414 1.414L16.414 10l1.293 1.293a1 1 0 01-1.414 1.414L15 11.414l-1.293 1.293a1 1 0 01-1.414-1.414L13.586 10l-1.293-1.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="particle-container absolute top-0 left-0 w-full h-full pointer-events-none"></div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Navigation Buttons (hidden by default to prevent flickering) -->
+    <button id="prev-btn" class="absolute top-1/2 left-4 -translate-y-1/2 bg-white/50 hover:bg-white/80 p-3 rounded-full shadow-md transition-colors" style="display: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+    </button>
+    <button id="next-btn" class="absolute top-1/2 right-4 -translate-y-1/2 bg-white/50 hover:bg-white/80 p-3 rounded-full shadow-md transition-colors" style="display: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+    </button>
+
+    <!-- Dot Indicators (hidden by default) -->
+    <div id="dots-container" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2" style="display: none;"></div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Particle Generation
+    document.querySelectorAll('.particle-container').forEach(container => {
+        if (container.children.length > 0) return;
+        const colors = ['#8B5CF6', '#E879F9', '#06B6D4'];
+        for (let i = 0; i < 250; i++) {
+            const p = document.createElement('div');
+            const size = Math.random() * 180 + 10;
+            const blur = Math.random() * 12;
+            Object.assign(p.style, {
+                position: 'absolute',
+                width: size + 'px', height: size + 'px',
+                left: Math.random() * 100 + '%',
+                top: Math.random() * 100 + '%',
+                backgroundColor: colors[Math.floor(Math.random() * colors.length)],
+                borderRadius: '50%',
+                opacity: Math.random() * 0.4 + 0.1,
+                filter: 'blur(' + blur + 'px)',
+                transform: 'translate(-50%, -50%)',
+                border: (size > 100 && blur > 6) ? '2px solid rgba(255,255,255,0.1)' : 'none'
+            });
+            container.appendChild(p);
+        }
+    });
+
+    // Carousel Navigation
+    const slidesContainer = document.getElementById('carousel-slides');
+    if (!slidesContainer) return;
+    const items = slidesContainer.querySelectorAll('.carousel-item');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const dotsContainer = document.getElementById('dots-container');
+    if (!prevBtn || !nextBtn || !dotsContainer) return;
+
+    let currentIndex = 0;
+    const totalSlides = items.length;
+
+    if (totalSlides <= 1) return;
+
+    prevBtn.style.display = 'block';
+    nextBtn.style.display = 'block';
+    dotsContainer.style.display = 'flex';
+
+    for (let i = 0; i < totalSlides; i++) {
+        const dot = document.createElement('button');
+        dot.classList.add('h-3', 'w-3', 'rounded-full', 'bg-white', 'bg-opacity-50', 'hover:bg-opacity-75', 'transition-colors');
+        dot.addEventListener('click', () => goToSlide(i));
+        dotsContainer.appendChild(dot);
+    }
+    const dots = dotsContainer.querySelectorAll('button');
+
+    function updateCarousel() {
+        slidesContainer.style.transform = 'translateX(-' + (currentIndex * 100) + '%)';
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('bg-opacity-100', i === currentIndex);
+            dot.classList.toggle('bg-opacity-50', i !== currentIndex);
+        });
+    }
+
+    function goToSlide(index) {
+        currentIndex = (index + totalSlides) % totalSlides;
+        updateCarousel();
+    }
+
+    nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+    prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
+    updateCarousel();
+
+    // Video Controls (supports multiple slides with videos)
+    document.querySelectorAll('.carousel-video-controls').forEach(controls => {
+        const slide = controls.closest('.carousel-item');
+        const video = slide.querySelector('.carousel-video');
+        const playPauseBtn = controls.querySelector('.video-play-pause');
+        const muteBtn = controls.querySelector('.video-mute');
+
+        if (!video || !playPauseBtn || !muteBtn) return;
+
+        playPauseBtn.addEventListener('click', () => {
+            if (video.paused) {
+                video.play();
+                playPauseBtn.querySelector('.play-icon').classList.add('hidden');
+                playPauseBtn.querySelector('.pause-icon').classList.remove('hidden');
+            } else {
+                video.pause();
+                playPauseBtn.querySelector('.pause-icon').classList.add('hidden');
+                playPauseBtn.querySelector('.play-icon').classList.remove('hidden');
+            }
+        });
+
+        muteBtn.addEventListener('click', () => {
+            video.muted = !video.muted;
+            muteBtn.querySelector('.unmute-icon').classList.toggle('hidden', video.muted);
+            muteBtn.querySelector('.mute-icon').classList.toggle('hidden', !video.muted);
+        });
+    });
+});
+</script>
+{% endif %}
