@@ -67,6 +67,103 @@
     </div>
 </section>
 
+<!-- Media Gallery Lightbox -->
+<div class="mg-lightbox" id="mg-lightbox">
+    <button class="mg-lightbox-close">&times;</button>
+    <button class="mg-lightbox-nav mg-lightbox-prev">&larr;</button>
+    <button class="mg-lightbox-nav mg-lightbox-next">&rarr;</button>
+    <img src="" alt="">
+    <div class="mg-lightbox-caption"></div>
+    <div class="mg-lightbox-counter"></div>
+</div>
+
+<style>
+.mg-lightbox {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.92);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.mg-lightbox.active {
+    display: flex;
+}
+
+.mg-lightbox img {
+    max-width: 90vw;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 0 40px rgba(139, 92, 246, 0.3);
+    cursor: default;
+}
+
+.mg-lightbox-caption {
+    color: white;
+    text-align: center;
+    margin-top: 16px;
+    font-size: 16px;
+    max-width: 600px;
+}
+
+.mg-lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    color: white;
+    font-size: 32px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    z-index: 10000;
+}
+
+.mg-lightbox-close:hover { opacity: 1; }
+
+.mg-lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 36px;
+    cursor: pointer;
+    background: rgba(139, 92, 246, 0.3);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: opacity 0.2s, background 0.2s;
+}
+
+.mg-lightbox-nav:hover {
+    opacity: 1;
+    background: rgba(139, 92, 246, 0.6);
+}
+
+.mg-lightbox-prev { left: 20px; }
+.mg-lightbox-next { right: 20px; }
+
+.mg-lightbox-counter {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 13px;
+    margin-top: 8px;
+}
+</style>
+
 <style>
 .media-gallery div::-webkit-scrollbar {
     display: none;
@@ -195,6 +292,87 @@ document.addEventListener('DOMContentLoaded', function() {
     container.addEventListener('touchend', () => {
         clearTimeout(isScrolling);
         isScrolling = setTimeout(() => { userInteracting = false; }, 3000);
+    });
+
+    // Media Gallery Lightbox
+    const mgLightbox = document.getElementById('mg-lightbox');
+    if (!mgLightbox) return;
+    const mgImg = mgLightbox.querySelector('img');
+    const mgCaption = mgLightbox.querySelector('.mg-lightbox-caption');
+    const mgCounter = mgLightbox.querySelector('.mg-lightbox-counter');
+    const mgClose = mgLightbox.querySelector('.mg-lightbox-close');
+    const mgPrev = mgLightbox.querySelector('.mg-lightbox-prev');
+    const mgNext = mgLightbox.querySelector('.mg-lightbox-next');
+
+    let mgItems = [];
+    let mgIndex = 0;
+
+    // Collect all clickable media thumbnails (only images, not videos)
+    const mgClickables = document.querySelectorAll('.mg-clickable[data-mg-src]');
+
+    mgClickables.forEach(thumb => {
+        thumb.addEventListener('click', function() {
+            const src = this.dataset.mgSrc;
+            if (!src) return;
+
+            mgItems = Array.from(mgClickables)
+                .filter(el => el.dataset.mgSrc)
+                .map(el => ({ src: el.dataset.mgSrc, title: el.dataset.mgTitle || '' }));
+
+            // Deduplicate (the scroll gallery duplicates items)
+            const seen = new Set();
+            mgItems = mgItems.filter(item => {
+                if (seen.has(item.src)) return false;
+                seen.add(item.src);
+                return true;
+            });
+
+            mgIndex = mgItems.findIndex(item => item.src === src);
+            if (mgIndex < 0) mgIndex = 0;
+
+            showMgLightbox();
+        });
+    });
+
+    function showMgLightbox() {
+        const item = mgItems[mgIndex];
+        mgImg.src = item.src;
+        mgImg.alt = item.title;
+        mgCaption.textContent = item.title;
+        mgCounter.textContent = (mgIndex + 1) + ' / ' + mgItems.length;
+        mgPrev.style.display = mgItems.length > 1 ? 'flex' : 'none';
+        mgNext.style.display = mgItems.length > 1 ? 'flex' : 'none';
+        mgLightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeMgLightbox() {
+        mgLightbox.classList.remove('active');
+        document.body.style.overflow = '';
+        mgImg.src = '';
+    }
+
+    mgClose.addEventListener('click', closeMgLightbox);
+    mgLightbox.addEventListener('click', function(e) {
+        if (e.target === mgLightbox) closeMgLightbox();
+    });
+    mgPrev.addEventListener('click', function(e) {
+        e.stopPropagation();
+        mgIndex = (mgIndex - 1 + mgItems.length) % mgItems.length;
+        showMgLightbox();
+    });
+    mgNext.addEventListener('click', function(e) {
+        e.stopPropagation();
+        mgIndex = (mgIndex + 1) % mgItems.length;
+        showMgLightbox();
+    });
+    mgImg.addEventListener('click', function(e) { e.stopPropagation(); });
+
+    document.addEventListener('keydown', function(e) {
+        if (!mgLightbox.classList.contains('active')) return;
+        if (e.key === 'Escape') closeMgLightbox();
+        if (e.key === 'ArrowLeft') { mgIndex = (mgIndex - 1 + mgItems.length) % mgItems.length; showMgLightbox(); }
+        if (e.key === 'ArrowRight') { mgIndex = (mgIndex + 1) % mgItems.length; showMgLightbox(); }
     });
 });
 </script>
