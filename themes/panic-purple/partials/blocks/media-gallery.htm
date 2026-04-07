@@ -72,7 +72,9 @@
     <button class="mg-lightbox-close">&times;</button>
     <button class="mg-lightbox-nav mg-lightbox-prev">&larr;</button>
     <button class="mg-lightbox-nav mg-lightbox-next">&rarr;</button>
-    <img src="" alt="">
+    <img src="" alt="" id="mg-lightbox-img">
+    <video controls id="mg-lightbox-video" style="display:none; max-width:90vw; max-height:80vh; border-radius:8px; box-shadow: 0 0 40px rgba(139,92,246,0.3);"></video>
+    <iframe id="mg-lightbox-iframe" style="display:none; width:80vw; height:45vw; max-height:80vh; border:none; border-radius:8px; box-shadow: 0 0 40px rgba(139,92,246,0.3);" allowfullscreen></iframe>
     <div class="mg-lightbox-caption"></div>
     <div class="mg-lightbox-counter"></div>
 </div>
@@ -297,7 +299,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Media Gallery Lightbox
     const mgLightbox = document.getElementById('mg-lightbox');
     if (!mgLightbox) return;
-    const mgImg = mgLightbox.querySelector('img');
+    const mgImg = document.getElementById('mg-lightbox-img');
+    const mgVideo = document.getElementById('mg-lightbox-video');
+    const mgIframe = document.getElementById('mg-lightbox-iframe');
     const mgCaption = mgLightbox.querySelector('.mg-lightbox-caption');
     const mgCounter = mgLightbox.querySelector('.mg-lightbox-counter');
     const mgClose = mgLightbox.querySelector('.mg-lightbox-close');
@@ -307,37 +311,80 @@ document.addEventListener('DOMContentLoaded', function() {
     let mgItems = [];
     let mgIndex = 0;
 
-    // Collect all clickable media thumbnails (only images, not videos)
-    const mgClickables = document.querySelectorAll('.mg-clickable[data-mg-src]');
+    // Collect all clickable media (images, videos, post previews)
+    const mgClickables = document.querySelectorAll('.mg-clickable[data-mg-src], .mg-clickable[data-mg-video]');
 
-    mgClickables.forEach(thumb => {
-        thumb.addEventListener('click', function() {
-            const src = this.dataset.mgSrc;
-            if (!src) return;
-
-            mgItems = Array.from(mgClickables)
-                .filter(el => el.dataset.mgSrc)
-                .map(el => ({ src: el.dataset.mgSrc, title: el.dataset.mgTitle || '' }));
-
-            // Deduplicate (the scroll gallery duplicates items)
-            const seen = new Set();
-            mgItems = mgItems.filter(item => {
-                if (seen.has(item.src)) return false;
-                seen.add(item.src);
-                return true;
-            });
-
-            mgIndex = mgItems.findIndex(item => item.src === src);
-            if (mgIndex < 0) mgIndex = 0;
-
-            showMgLightbox();
+    function buildMgItems() {
+        const items = [];
+        const seen = new Set();
+        mgClickables.forEach(el => {
+            const videoUrl = el.dataset.mgVideo;
+            const imgSrc = el.dataset.mgSrc;
+            const title = el.dataset.mgTitle || '';
+            const videoType = el.dataset.mgVideoType || '';
+            // Unique key for deduplication (scroll gallery duplicates items)
+            const key = videoUrl || imgSrc;
+            if (!key || seen.has(key)) return;
+            seen.add(key);
+            if (videoUrl) {
+                items.push({ type: videoType === 'youtube' || videoType === 'vimeo' ? 'embed' : 'video', src: imgSrc || '', videoUrl: videoUrl, title: title, key: key });
+            } else {
+                items.push({ type: 'image', src: imgSrc, title: title, key: key });
+            }
         });
+        return items;
+    }
+
+    function openMgLightbox(key) {
+        mgItems = buildMgItems();
+        mgIndex = mgItems.findIndex(item => item.key === key);
+        if (mgIndex < 0) mgIndex = 0;
+        showMgLightbox();
+    }
+
+    // Click handlers for image/post thumbnails
+    mgClickables.forEach(el => {
+        // For video players, only the expand button should trigger lightbox
+        if (el.dataset.mgVideo) {
+            const expandBtn = el.querySelector('.mg-expand-btn');
+            if (expandBtn) {
+                expandBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    openMgLightbox(el.dataset.mgVideo || el.dataset.mgSrc);
+                });
+            }
+        } else {
+            el.addEventListener('click', function() {
+                const key = this.dataset.mgSrc;
+                if (key) openMgLightbox(key);
+            });
+        }
     });
 
     function showMgLightbox() {
         const item = mgItems[mgIndex];
-        mgImg.src = item.src;
-        mgImg.alt = item.title;
+        // Hide all media elements first
+        mgImg.style.display = 'none';
+        mgVideo.style.display = 'none';
+        mgVideo.pause();
+        mgVideo.removeAttribute('src');
+        mgIframe.style.display = 'none';
+        mgIframe.src = '';
+
+        if (item.type === 'video') {
+            mgVideo.src = item.videoUrl;
+            mgVideo.style.display = 'block';
+            mgVideo.play().catch(() => {});
+        } else if (item.type === 'embed') {
+            mgIframe.src = item.videoUrl;
+            mgIframe.style.display = 'block';
+        } else {
+            mgImg.src = item.src;
+            mgImg.alt = item.title;
+            mgImg.style.display = 'block';
+        }
+
         mgCaption.textContent = item.title;
         mgCounter.textContent = (mgIndex + 1) + ' / ' + mgItems.length;
         mgPrev.style.display = mgItems.length > 1 ? 'flex' : 'none';
@@ -350,6 +397,9 @@ document.addEventListener('DOMContentLoaded', function() {
         mgLightbox.classList.remove('active');
         document.body.style.overflow = '';
         mgImg.src = '';
+        mgVideo.pause();
+        mgVideo.removeAttribute('src');
+        mgIframe.src = '';
     }
 
     mgClose.addEventListener('click', closeMgLightbox);
@@ -367,6 +417,8 @@ document.addEventListener('DOMContentLoaded', function() {
         showMgLightbox();
     });
     mgImg.addEventListener('click', function(e) { e.stopPropagation(); });
+    mgVideo.addEventListener('click', function(e) { e.stopPropagation(); });
+    mgIframe.addEventListener('click', function(e) { e.stopPropagation(); });
 
     document.addEventListener('keydown', function(e) {
         if (!mgLightbox.classList.contains('active')) return;

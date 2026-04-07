@@ -1,4 +1,6 @@
-<div class="post-preview relative rounded-lg overflow-hidden border-2 border-panic-purple/50 hover:border-panic-cyan transition-all duration-300" style="box-shadow: 0 4px 15px var(--panic-glow);">
+<div class="post-preview relative rounded-lg overflow-hidden border-2 border-panic-purple/50 hover:border-panic-cyan transition-all duration-300 mg-clickable"
+     {% if content.image %}data-mg-src="{{ content.image|media }}" data-mg-title="{{ content.title }}"{% endif %}
+     style="box-shadow: 0 4px 15px var(--panic-glow); cursor: pointer;">
     {% if content.image %}
         <img src="{{ content.image | media }}" alt="{{ content.title }}" class="w-full h-48 object-cover">
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
