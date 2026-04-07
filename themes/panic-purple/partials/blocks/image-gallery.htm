@@ -206,6 +206,97 @@ function onStart()
     z-index: -1;
     pointer-events: none;
 }
+
+.ig-lightbox {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.92);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.ig-lightbox.active {
+    display: flex;
+}
+
+.ig-lightbox img {
+    max-width: 90vw;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 0 40px rgba(139, 92, 246, 0.3);
+    cursor: default;
+}
+
+.ig-lightbox-caption {
+    color: white;
+    text-align: center;
+    margin-top: 16px;
+    font-size: 16px;
+    max-width: 600px;
+}
+
+.ig-lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    color: white;
+    font-size: 32px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    z-index: 10000;
+}
+
+.ig-lightbox-close:hover {
+    opacity: 1;
+}
+
+.ig-lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 36px;
+    cursor: pointer;
+    background: rgba(139, 92, 246, 0.3);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: opacity 0.2s, background 0.2s;
+}
+
+.ig-lightbox-nav:hover {
+    opacity: 1;
+    background: rgba(139, 92, 246, 0.6);
+}
+
+.ig-lightbox-prev { left: 20px; }
+.ig-lightbox-next { right: 20px; }
+
+.ig-lightbox-counter {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+.ig-clickable {
+    cursor: pointer;
+}
 </style>
 
 <section class="image-gallery-section py-8">
@@ -221,9 +312,14 @@ function onStart()
     <div id="{{ galleryId }}" class="grid {{ gridCols }} max-w-6xl mx-auto" style="padding: 20px 0; gap: {{ gap }}px;" data-per-page="{{ perPage }}">
         {% for item in galleryImages %}
             {% set rotation = jaunty ? (loop.index is odd ? 'rotate(-2deg)' : 'rotate(2deg)') : 'rotate(0)' %}
-            {% set tag = item.link_url ? 'a' : 'div' %}
+            {% set imgSrc = item.image ? item.image|media : '' %}
 
-            <{{ tag }} {% if item.link_url %}href="{{ item.link_url }}"{% endif %} class="ig-sticker-card ig-item" style="transform: {{ rotation }};">
+            <div class="ig-sticker-card ig-item ig-clickable"
+                 style="transform: {{ rotation }};"
+                 data-ig-src="{{ imgSrc }}"
+                 data-ig-title="{{ item.title }}"
+                 data-ig-gallery="{{ galleryId }}"
+                 {% if item.link_url %}data-ig-link="{{ item.link_url }}"{% endif %}>
                 <div class="ig-card-container">
                     {% if showFold %}
                     <div class="ig-white-tri">
@@ -236,7 +332,7 @@ function onStart()
 
                     <div class="ig-image-box">
                         {% if item.image %}
-                            <img src="{{ item.image|media }}" alt="{{ item.title }}" loading="lazy">
+                            <img src="{{ imgSrc }}" alt="{{ item.title }}" loading="lazy">
                         {% else %}
                             <div class="ig-placeholder">
                                 <i class="icon-picture-o"></i>
@@ -261,7 +357,7 @@ function onStart()
                         {% endif %}
                     </div>
                 </div>
-            </{{ tag }}>
+            </div>
         {% else %}
             <p class="text-panic-text/80 col-span-full text-center">No images added yet.</p>
         {% endfor %}
@@ -279,6 +375,16 @@ function onStart()
     </div>
     {% endif %}
 </section>
+
+<!-- Lightbox (one per page, shared) -->
+<div class="ig-lightbox" id="ig-lightbox">
+    <button class="ig-lightbox-close">&times;</button>
+    <button class="ig-lightbox-nav ig-lightbox-prev">&larr;</button>
+    <button class="ig-lightbox-nav ig-lightbox-next">&rarr;</button>
+    <img src="" alt="">
+    <div class="ig-lightbox-caption"></div>
+    <div class="ig-lightbox-counter"></div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -347,6 +453,78 @@ document.addEventListener('DOMContentLoaded', function() {
         nextBtn.addEventListener('click', () => { if (currentPage < totalPages) showPage(currentPage + 1); });
 
         showPage(1);
+    });
+
+    // Lightbox
+    const lightbox = document.getElementById('ig-lightbox');
+    if (!lightbox) return;
+    const lbImg = lightbox.querySelector('img');
+    const lbCaption = lightbox.querySelector('.ig-lightbox-caption');
+    const lbCounter = lightbox.querySelector('.ig-lightbox-counter');
+    const lbClose = lightbox.querySelector('.ig-lightbox-close');
+    const lbPrev = lightbox.querySelector('.ig-lightbox-prev');
+    const lbNext = lightbox.querySelector('.ig-lightbox-next');
+
+    let lbItems = [];
+    let lbIndex = 0;
+
+    document.querySelectorAll('.ig-clickable[data-ig-src]').forEach(card => {
+        card.addEventListener('click', function(e) {
+            const src = this.dataset.igSrc;
+            if (!src) return;
+
+            // Build list from same gallery
+            const galleryId = this.dataset.igGallery;
+            lbItems = Array.from(document.querySelectorAll('.ig-clickable[data-ig-gallery="' + galleryId + '"][data-ig-src]'))
+                .filter(el => el.dataset.igSrc)
+                .map(el => ({ src: el.dataset.igSrc, title: el.dataset.igTitle || '' }));
+
+            lbIndex = lbItems.findIndex(item => item.src === src);
+            if (lbIndex < 0) lbIndex = 0;
+
+            showLightbox();
+        });
+    });
+
+    function showLightbox() {
+        const item = lbItems[lbIndex];
+        lbImg.src = item.src;
+        lbImg.alt = item.title;
+        lbCaption.textContent = item.title;
+        lbCounter.textContent = (lbIndex + 1) + ' / ' + lbItems.length;
+        lbPrev.style.display = lbItems.length > 1 ? 'flex' : 'none';
+        lbNext.style.display = lbItems.length > 1 ? 'flex' : 'none';
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        lightbox.classList.remove('active');
+        document.body.style.overflow = '';
+        lbImg.src = '';
+    }
+
+    lbClose.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', function(e) {
+        if (e.target === lightbox) closeLightbox();
+    });
+    lbPrev.addEventListener('click', function(e) {
+        e.stopPropagation();
+        lbIndex = (lbIndex - 1 + lbItems.length) % lbItems.length;
+        showLightbox();
+    });
+    lbNext.addEventListener('click', function(e) {
+        e.stopPropagation();
+        lbIndex = (lbIndex + 1) % lbItems.length;
+        showLightbox();
+    });
+    lbImg.addEventListener('click', function(e) { e.stopPropagation(); });
+
+    document.addEventListener('keydown', function(e) {
+        if (!lightbox.classList.contains('active')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') { lbIndex = (lbIndex - 1 + lbItems.length) % lbItems.length; showLightbox(); }
+        if (e.key === 'ArrowRight') { lbIndex = (lbIndex + 1) % lbItems.length; showLightbox(); }
     });
 });
 </script>
