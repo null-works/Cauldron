@@ -57,12 +57,12 @@ hero-carousel:
                         type: switch
                         default: true
                         span: left
-                    video_url:
-                        label: Video URL
-                        comment: Direct link to MP4 or video file
-                        type: text
+                    video_file:
+                        label: Video File
+                        comment: Upload or select a video from the Media Manager
+                        type: mediafinder
+                        mode: file
                         span: right
-                        placeholder: "https://example.com/trailer.mp4"
                         trigger:
                             action: show
                             field: show_video

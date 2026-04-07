@@ -64,7 +64,7 @@
 
                 </div>
 
-                {% if slide.show_video and slide.video_url %}
+                {% if slide.show_video and slide.video_file %}
                 <div class="w-full md:w-1/2 flex items-center justify-center z-10">
                     <div class="relative floating-image w-full max-w-2xl">
                         <img src="{{ 'assets/img/teleframe.png'|theme }}"
@@ -74,7 +74,7 @@
 
                         <video class="carousel-video absolute rounded-[2%]"
                                style="width: 75%; aspect-ratio: 4 / 3; top: 11%; left: 7%; object-fit: fill; z-index: 5; box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.7);"
-                               src="{{ slide.video_url }}"
+                               src="{{ slide.video_file|media }}"
                                {{ slide.video_autoplay ? 'autoplay' : '' }} loop {{ slide.video_muted is not same as(false) ? 'muted' : '' }} playsinline>
                             Your browser does not support the video tag.
                         </video>
