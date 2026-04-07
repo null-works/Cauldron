@@ -1,6 +1,6 @@
-<section class="media-gallery" style="padding-top: 0; padding-bottom: 0; margin-top: -20px; position: relative;">
+<section class="media-gallery" style="padding-top: 0; padding-bottom: 0; margin-top: -20px; position: relative; overflow: visible;">
     <!-- Techy Peeling Badge -->
-    <div style="position: absolute; top: -35px; left: -50px; z-index: 10; transform: rotate(-8deg);">
+    <div class="ogglables-badge" style="position: absolute; top: -35px; left: -50px; z-index: 10; transform: rotate(-8deg);">
         <div style="
             background: linear-gradient(135deg, #00ff88 0%, #00ccff 50%, #6366f1 100%);
             padding: 12px 24px;
@@ -208,6 +208,33 @@
     height: 220px !important;
     width: 320px !important;
 }
+
+/* Mobile: smaller gallery items */
+@media (max-width: 640px) {
+    .ogglables-badge {
+        left: 10px !important;
+        top: -25px !important;
+        transform: rotate(-5deg) scale(0.85) !important;
+    }
+
+    .widget-container {
+        width: 260px !important;
+        height: 180px !important;
+    }
+
+    .widget-container > *,
+    .widget-container .video-player,
+    .widget-container .video-container,
+    .widget-container iframe,
+    .widget-container img,
+    .widget-container div,
+    .widget-container .video-frame {
+        width: 260px !important;
+        height: 180px !important;
+        max-width: 260px !important;
+        max-height: 180px !important;
+    }
+}
 </style>
 
 <script>
@@ -221,7 +248,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let scrollPosition = 0;
     let animationId;
     
-    const itemWidth = 344; // 320px width + 24px gap
+    const firstWidget = content.querySelector('.widget-container');
+    const itemWidth = firstWidget ? firstWidget.offsetWidth + 24 : 344;
     const originalItemCount = {{ data.content|length }};
     const resetPoint = itemWidth * originalItemCount;
     
