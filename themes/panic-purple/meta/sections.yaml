@@ -108,6 +108,24 @@ image-gallery:
                 '4x2': '4 columns'
             default: '3x2'
             span: left
+        source:
+            label: Image Source
+            type: dropdown
+            options:
+                manual: 'Add images manually'
+                folder: 'Load from media folder'
+            default: manual
+            span: right
+        media_folder:
+            label: Media Folder Path
+            comment: "Path inside Media Manager, e.g. gallery or screenshots/v2"
+            type: text
+            span: full
+            placeholder: "gallery"
+            trigger:
+                action: show
+                field: source
+                condition: "value[folder]"
         images:
             type: repeater
             prompt: Add image

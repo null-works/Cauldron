@@ -1,3 +1,33 @@
+use System\Classes\MediaLibrary;
+
+function onStart()
+{
+    $data = $this['data'] ?? [];
+    $source = $data['source'] ?? 'manual';
+    $folder = $data['media_folder'] ?? '';
+
+    if ($source === 'folder' && $folder) {
+        $folder = '/' . trim($folder, '/');
+        $files = MediaLibrary::instance()->listFolderContents($folder, 'title', 'image');
+        $images = [];
+        foreach ($files as $file) {
+            $ext = strtolower(pathinfo($file->path, PATHINFO_EXTENSION));
+            if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'avif'])) {
+                $name = pathinfo($file->path, PATHINFO_FILENAME);
+                $name = str_replace(['-', '_'], ' ', $name);
+                $images[] = [
+                    'image' => trim($folder, '/') . '/' . basename($file->path),
+                    'title' => ucwords($name),
+                    'description' => '',
+                    'link_url' => '',
+                    'link_text' => '',
+                ];
+            }
+        }
+        $this['folderImages'] = $images;
+    }
+}
+==
 {% set layoutConfig = {
     '2x2': 'grid-cols-1 md:grid-cols-2',
     '3x2': 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
@@ -5,6 +35,12 @@
 } %}
 
 {% set gridCols = layoutConfig[data.layout|default('3x2')] %}
+
+{% if data.source == 'folder' and folderImages is defined %}
+    {% set galleryImages = folderImages %}
+{% else %}
+    {% set galleryImages = data.images|default([]) %}
+{% endif %}
 
 <style>
 .ig-sticker-card {
@@ -161,7 +197,7 @@
     {% endif %}
 
     <div class="grid {{ gridCols }} gap-8 max-w-6xl mx-auto" style="padding: 20px 0;">
-        {% for item in data.images %}
+        {% for item in galleryImages %}
             {% set rotation = loop.index is odd ? 'rotate(-2deg)' : 'rotate(2deg)' %}
             {% set tag = item.link_url ? 'a' : 'div' %}
 
