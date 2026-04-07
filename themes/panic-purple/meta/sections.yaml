@@ -110,43 +110,27 @@ image-gallery:
             span: left
         card_padding:
             label: Card Padding (px)
-            type: dropdown
-            options:
-                '2': '2px (tight)'
-                '6': '6px (compact)'
-                '12': '12px (normal)'
-                '20': '20px (spacious)'
-            default: '12'
+            comment: "e.g. 0, 4, 12, 20"
+            type: number
+            default: 12
             span: right
         grid_gap:
-            label: Grid Gap
-            type: dropdown
-            options:
-                '2': 'Tight (2px)'
-                '4': 'Compact (4px)'
-                '8': 'Normal (8px)'
-                '16': 'Wide (16px)'
-            default: '8'
+            label: Grid Gap (px)
+            comment: "e.g. 0, 4, 8, 16"
+            type: number
+            default: 8
             span: left
         border_width:
             label: Border Width (px)
-            type: dropdown
-            options:
-                '0': 'None'
-                '1': 'Thin (1px)'
-                '2': 'Normal (2px)'
-                '4': 'Thick (4px)'
-            default: '0'
+            comment: "0 for no border"
+            type: number
+            default: 0
             span: right
         border_radius:
-            label: Corner Rounding
-            type: dropdown
-            options:
-                '0': 'Sharp corners'
-                '6': 'Slightly rounded'
-                '12': 'Rounded'
-                '20': 'Very rounded'
-            default: '12'
+            label: Corner Rounding (px)
+            comment: "0 for sharp corners"
+            type: number
+            default: 12
             span: left
         show_fold:
             label: Show folded corner
