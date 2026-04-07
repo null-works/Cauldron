@@ -78,7 +78,9 @@ function onStart()
     {% if bw|number_format > 0 %}
     border: {{ bw }}px solid rgba(139, 92, 246, 0.4);
     {% endif %}
-    {% if showFold %}
+}
+
+.ig-card-container.ig-has-fold {
     clip-path: polygon(
         0 0,
         calc(100% - {{ foldSize }}px) 0,
@@ -86,7 +88,6 @@ function onStart()
         100% 100%,
         0 100%
     );
-    {% endif %}
 }
 
 .ig-image-box {
@@ -96,7 +97,9 @@ function onStart()
     background: black;
     border-radius: {{ (br|number_format - 4) > 0 ? br|number_format - 4 : 0 }}px;
     overflow: hidden;
-    {% if showFold %}
+}
+
+.ig-has-fold .ig-image-box {
     clip-path: polygon(
         0 0,
         calc(100% - {{ innerFold }}px) 0,
@@ -104,7 +107,6 @@ function onStart()
         100% 100%,
         0 100%
     );
-    {% endif %}
 }
 
 .ig-image-box img {
@@ -320,8 +322,9 @@ function onStart()
                  data-ig-title="{{ item.title }}"
                  data-ig-gallery="{{ galleryId }}"
                  {% if item.link_url %}data-ig-link="{{ item.link_url }}"{% endif %}>
-                <div class="ig-card-container">
-                    {% if showFold %}
+                {% set hasFold = showFold and (loop.index % 4 == 1) %}
+                <div class="ig-card-container {{ hasFold ? 'ig-has-fold' : '' }}">
+                    {% if hasFold %}
                     <div class="ig-white-tri">
                         <canvas class="ig-white-tri-canvas" width="{{ innerFold }}" height="{{ innerFold }}"></canvas>
                     </div>
