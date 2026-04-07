@@ -86,6 +86,63 @@ hero-carousel:
                             field: show_video
                             condition: checked
 
+model-viewer:
+    name: 3D Model Viewer
+    description: Display an interactive 3D model with rotation and zoom
+    icon: icon-cube
+    fields:
+        model_file:
+            label: Model File (.glb)
+            comment: Upload or select a GLB model from the Media Manager
+            type: mediafinder
+            mode: file
+            span: full
+        caption:
+            label: Caption
+            type: text
+            span: left
+        height:
+            label: Height (px)
+            type: number
+            default: 500
+            span: right
+        auto_rotate:
+            label: Auto Rotate
+            type: switch
+            default: true
+            span: left
+        camera_controls:
+            label: Camera Controls
+            comment: Let visitors drag to rotate and scroll to zoom
+            type: switch
+            default: true
+            span: right
+        background:
+            label: Background
+            type: dropdown
+            options:
+                theme: 'Match theme (dark purple)'
+                transparent: 'Transparent'
+                black: 'Black'
+                gradient: 'Purple gradient'
+            default: theme
+            span: left
+        rotation_speed:
+            label: Rotation Speed
+            type: dropdown
+            options:
+                '15deg': 'Slow'
+                '30deg': 'Normal'
+                '60deg': 'Fast'
+            default: '30deg'
+            span: right
+        show_in_card:
+            label: Sticker card style
+            comment: Wrap in the folded-corner card like the galleries
+            type: switch
+            default: false
+            span: left
+
 image-gallery:
     name: Image Gallery
     description: Grid of images with sticker-card styling, jaunty angles, and folded corners

@@ -1,0 +1,74 @@
+{% set bgConfig = {
+    'theme': '#1E1B31',
+    'transparent': 'transparent',
+    'black': '#000000',
+    'gradient': 'linear-gradient(135deg, #2D1B69 0%, #1E1B31 50%, #8B5CF6 100%)'
+} %}
+
+{% set bgColor = bgConfig[data.background|default('theme')] %}
+{% set modelHeight = data.height|default(500) %}
+{% set showCard = data.show_in_card|default(false) %}
+
+{% if data.model_file %}
+<section class="model-viewer-section py-8">
+    {% if data.caption %}
+        <div class="text-center mb-6">
+            <h2 class="text-3xl font-bold text-panic-purple glow">{{ data.caption }}</h2>
+        </div>
+    {% endif %}
+
+    {% if showCard %}
+    <div class="max-w-4xl mx-auto" style="transform: rotate(-1deg);">
+        <div style="
+            position: relative;
+            background: white;
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            clip-path: polygon(0 0, calc(100% - 60px) 0, 100% 60px, 100% 100%, 0 100%);
+        ">
+    {% endif %}
+
+    <div class="max-w-4xl mx-auto {{ showCard ? '' : 'rounded-xl overflow-hidden' }}" style="{{ showCard ? '' : 'box-shadow: 0 0 30px rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.3);' }}">
+        <model-viewer
+            src="{{ data.model_file|media }}"
+            alt="{{ data.caption|default('3D Model') }}"
+            {{ data.auto_rotate is not same as(false) ? 'auto-rotate' : '' }}
+            {{ data.camera_controls is not same as(false) ? 'camera-controls' : '' }}
+            rotation-per-second="{{ data.rotation_speed|default('30deg') }}"
+            interaction-prompt="none"
+            style="
+                width: 100%;
+                height: {{ modelHeight }}px;
+                background: {{ bgColor }};
+                {{ showCard ? 'border-radius: 6px;' : 'border-radius: 12px;' }}
+                --poster-color: {{ bgColor }};
+            "
+            loading="lazy"
+            reveal="auto"
+        >
+            <div slot="poster" style="
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: {{ bgColor }};
+                color: var(--panic-purple);
+                font-size: 18px;
+            ">
+                Loading 3D model...
+            </div>
+        </model-viewer>
+    </div>
+
+    {% if showCard %}
+        </div>
+    </div>
+    {% endif %}
+</section>
+{% else %}
+<section class="model-viewer-section py-8">
+    <p class="text-panic-text/80 text-center">No model file selected. Upload a .glb file in the block editor.</p>
+</section>
+{% endif %}
