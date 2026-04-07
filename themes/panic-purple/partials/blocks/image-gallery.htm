@@ -46,6 +46,15 @@ function onStart()
     {% set galleryImages = data.images|default([]) %}
 {% endif %}
 
+{% set pad = data.card_padding|default('12') %}
+{% set gap = data.grid_gap|default('8') %}
+{% set bw = data.border_width|default('0') %}
+{% set br = data.border_radius|default('12') %}
+{% set showFold = data.show_fold is not same as(false) %}
+{% set jaunty = data.jaunty_angles is not same as(false) %}
+{% set foldSize = pad|number_format > 6 ? 60 : 30 %}
+{% set innerFold = pad|number_format > 6 ? 48 : 24 %}
+
 <style>
 .ig-sticker-card {
     display: block;
@@ -61,16 +70,21 @@ function onStart()
 .ig-card-container {
     position: relative;
     background: white;
-    padding: 12px;
-    border-radius: 12px;
+    padding: {{ pad }}px;
+    border-radius: {{ br }}px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    {% if bw|number_format > 0 %}
+    border: {{ bw }}px solid rgba(139, 92, 246, 0.4);
+    {% endif %}
+    {% if showFold %}
     clip-path: polygon(
         0 0,
-        calc(100% - 60px) 0,
-        100% 60px,
+        calc(100% - {{ foldSize }}px) 0,
+        100% {{ foldSize }}px,
         100% 100%,
         0 100%
     );
+    {% endif %}
 }
 
 .ig-image-box {
@@ -78,15 +92,17 @@ function onStart()
     width: 100%;
     aspect-ratio: 16 / 9;
     background: black;
-    border-radius: 6px;
+    border-radius: {{ (br|number_format - 4) > 0 ? br|number_format - 4 : 0 }}px;
     overflow: hidden;
+    {% if showFold %}
     clip-path: polygon(
         0 0,
-        calc(100% - 48px) 0,
-        100% 48px,
+        calc(100% - {{ innerFold }}px) 0,
+        100% {{ innerFold }}px,
         100% 100%,
         0 100%
     );
+    {% endif %}
 }
 
 .ig-image-box img {
@@ -153,10 +169,10 @@ function onStart()
 
 .ig-white-tri {
     position: absolute;
-    top: 12px;
-    right: 60px;
-    width: 48px;
-    height: 48px;
+    top: {{ pad }}px;
+    right: {{ foldSize }}px;
+    width: {{ innerFold }}px;
+    height: {{ innerFold }}px;
     z-index: 50;
     transform: rotate(-90deg);
     transform-origin: top right;
@@ -165,9 +181,9 @@ function onStart()
 .ig-gray-fold {
     position: absolute;
     top: 0;
-    right: 60px;
-    width: 60px;
-    height: 60px;
+    right: {{ foldSize }}px;
+    width: {{ foldSize }}px;
+    height: {{ foldSize }}px;
     z-index: 100;
     transform: rotate(-90deg);
     transform-origin: top right;
@@ -200,19 +216,21 @@ function onStart()
         </div>
     {% endif %}
 
-    <div class="grid {{ gridCols }} gap-8 max-w-6xl mx-auto" style="padding: 20px 0;">
+    <div class="grid {{ gridCols }} max-w-6xl mx-auto" style="padding: 20px 0; gap: {{ gap }}px;">
         {% for item in galleryImages %}
-            {% set rotation = loop.index is odd ? 'rotate(-2deg)' : 'rotate(2deg)' %}
+            {% set rotation = jaunty ? (loop.index is odd ? 'rotate(-2deg)' : 'rotate(2deg)') : 'rotate(0)' %}
             {% set tag = item.link_url ? 'a' : 'div' %}
 
             <{{ tag }} {% if item.link_url %}href="{{ item.link_url }}"{% endif %} class="ig-sticker-card" style="transform: {{ rotation }};">
                 <div class="ig-card-container">
+                    {% if showFold %}
                     <div class="ig-white-tri">
-                        <canvas class="ig-white-tri-canvas" width="48" height="48"></canvas>
+                        <canvas class="ig-white-tri-canvas" width="{{ innerFold }}" height="{{ innerFold }}"></canvas>
                     </div>
                     <div class="ig-gray-fold">
-                        <canvas class="ig-gray-fold-canvas" width="60" height="60"></canvas>
+                        <canvas class="ig-gray-fold-canvas" width="{{ foldSize }}" height="{{ foldSize }}"></canvas>
                     </div>
+                    {% endif %}
 
                     <div class="ig-image-box">
                         {% if item.image %}
@@ -252,28 +270,30 @@ function onStart()
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.ig-white-tri-canvas').forEach(canvas => {
         const ctx = canvas.getContext('2d');
+        const s = canvas.width;
         ctx.fillStyle = 'white';
         ctx.beginPath();
-        ctx.moveTo(48, 0);
-        ctx.lineTo(48, 48);
-        ctx.lineTo(0, 48);
-        ctx.lineTo(0, 8);
-        ctx.arcTo(0, 0, 8, 0, 8);
-        ctx.lineTo(48, 0);
+        ctx.moveTo(s, 0);
+        ctx.lineTo(s, s);
+        ctx.lineTo(0, s);
+        ctx.lineTo(0, Math.round(s * 0.17));
+        ctx.arcTo(0, 0, Math.round(s * 0.17), 0, Math.round(s * 0.17));
+        ctx.lineTo(s, 0);
         ctx.closePath();
         ctx.fill();
     });
 
     document.querySelectorAll('.ig-gray-fold-canvas').forEach(canvas => {
         const ctx = canvas.getContext('2d');
+        const s = canvas.width;
         ctx.fillStyle = '#e8e8e8';
         ctx.beginPath();
-        ctx.moveTo(60, 0);
-        ctx.lineTo(60, 60);
-        ctx.lineTo(0, 60);
-        ctx.lineTo(0, 10);
-        ctx.arcTo(0, 0, 10, 0, 10);
-        ctx.lineTo(60, 0);
+        ctx.moveTo(s, 0);
+        ctx.lineTo(s, s);
+        ctx.lineTo(0, s);
+        ctx.lineTo(0, Math.round(s * 0.17));
+        ctx.arcTo(0, 0, Math.round(s * 0.17), 0, Math.round(s * 0.17));
+        ctx.lineTo(s, 0);
         ctx.closePath();
         ctx.fill();
     });
