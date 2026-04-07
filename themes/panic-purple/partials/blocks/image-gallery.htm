@@ -1,0 +1,241 @@
+{% set layoutConfig = {
+    '2x2': 'grid-cols-1 md:grid-cols-2',
+    '3x2': 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+    '4x2': 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
+} %}
+
+{% set gridCols = layoutConfig[data.layout|default('3x2')] %}
+
+<style>
+.ig-sticker-card {
+    display: block;
+    transition: transform 0.3s;
+    text-decoration: none;
+    position: relative;
+}
+
+.ig-sticker-card:hover {
+    transform: translateY(-8px) rotate(0deg) !important;
+}
+
+.ig-card-container {
+    position: relative;
+    background: white;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    clip-path: polygon(
+        0 0,
+        calc(100% - 60px) 0,
+        100% 60px,
+        100% 100%,
+        0 100%
+    );
+}
+
+.ig-image-box {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: black;
+    border-radius: 6px;
+    overflow: hidden;
+    clip-path: polygon(
+        0 0,
+        calc(100% - 48px) 0,
+        100% 48px,
+        100% 100%,
+        0 100%
+    );
+}
+
+.ig-image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ig-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #8B5CF6 0%, #6366f1 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    color: rgba(229, 231, 235, 0.5);
+}
+
+.ig-text-gradient {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60%;
+    background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
+    pointer-events: none;
+}
+
+.ig-text-area {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    z-index: 5;
+}
+
+.ig-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.ig-desc {
+    font-size: 11px;
+    margin-bottom: 6px;
+    opacity: 0.95;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.ig-meta {
+    font-size: 10px;
+    opacity: 0.8;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.ig-white-tri {
+    position: absolute;
+    top: 12px;
+    right: 60px;
+    width: 48px;
+    height: 48px;
+    z-index: 50;
+    transform: rotate(-90deg);
+    transform-origin: top right;
+}
+
+.ig-gray-fold {
+    position: absolute;
+    top: 0;
+    right: 60px;
+    width: 60px;
+    height: 60px;
+    z-index: 100;
+    transform: rotate(-90deg);
+    transform-origin: top right;
+}
+
+.ig-gray-fold canvas {
+    filter: drop-shadow(-4px 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+.ig-gray-fold::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle at top right, rgba(0,0,0,0.3) 0%, transparent 70%);
+    z-index: -1;
+    pointer-events: none;
+}
+</style>
+
+<section class="image-gallery-section py-8">
+    {% if data.title %}
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-panic-purple glow">{{ data.title }}</h2>
+            {% if data.subtitle %}
+                <p class="text-panic-text/80 mt-2">{{ data.subtitle }}</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="grid {{ gridCols }} gap-8 max-w-6xl mx-auto" style="padding: 20px 0;">
+        {% for item in data.images %}
+            {% set rotation = loop.index is odd ? 'rotate(-2deg)' : 'rotate(2deg)' %}
+            {% set tag = item.link_url ? 'a' : 'div' %}
+
+            <{{ tag }} {% if item.link_url %}href="{{ item.link_url }}"{% endif %} class="ig-sticker-card" style="transform: {{ rotation }};">
+                <div class="ig-card-container">
+                    <div class="ig-white-tri">
+                        <canvas class="ig-white-tri-canvas" width="48" height="48"></canvas>
+                    </div>
+                    <div class="ig-gray-fold">
+                        <canvas class="ig-gray-fold-canvas" width="60" height="60"></canvas>
+                    </div>
+
+                    <div class="ig-image-box">
+                        {% if item.image %}
+                            <img src="{{ item.image|media }}" alt="{{ item.title }}">
+                        {% else %}
+                            <div class="ig-placeholder">
+                                <i class="icon-picture-o"></i>
+                            </div>
+                        {% endif %}
+
+                        {% if item.title or item.description %}
+                        <div class="ig-text-gradient"></div>
+                        <div class="ig-text-area">
+                            {% if item.title %}
+                                <div class="ig-title">{{ item.title }}</div>
+                            {% endif %}
+                            {% if item.description %}
+                                <div class="ig-desc">{{ item.description }}</div>
+                            {% endif %}
+                            {% if item.link_url and item.link_text %}
+                                <div class="ig-meta">
+                                    <span style="color: #06B6D4; font-weight: bold;">{{ item.link_text }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </{{ tag }}>
+        {% else %}
+            <p class="text-panic-text/80 col-span-full text-center">No images added yet.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.ig-white-tri-canvas').forEach(canvas => {
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.moveTo(48, 0);
+        ctx.lineTo(48, 48);
+        ctx.lineTo(0, 48);
+        ctx.lineTo(0, 8);
+        ctx.arcTo(0, 0, 8, 0, 8);
+        ctx.lineTo(48, 0);
+        ctx.closePath();
+        ctx.fill();
+    });
+
+    document.querySelectorAll('.ig-gray-fold-canvas').forEach(canvas => {
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#e8e8e8';
+        ctx.beginPath();
+        ctx.moveTo(60, 0);
+        ctx.lineTo(60, 60);
+        ctx.lineTo(0, 60);
+        ctx.lineTo(0, 10);
+        ctx.arcTo(0, 0, 10, 0, 10);
+        ctx.lineTo(60, 0);
+        ctx.closePath();
+        ctx.fill();
+    });
+});
+</script>
