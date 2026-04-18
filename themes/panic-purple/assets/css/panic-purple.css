@@ -1,4 +1,13 @@
 /* Panic Purple Theme - Grabby Paws Inspired */
+
+@font-face {
+  font-family: 'GrabbyPaws';
+  src: url('../fonts/GrabbyPaws.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   /* Core Panic Purple palette from game UI */
   --panic-deep: #2D1B69;
@@ -11,6 +20,7 @@
   --panic-text: #E5E7EB;
   --panic-text-bright: #FFFFFF;
   --panic-glow: rgba(139, 92, 246, 0.3);
+  --grabby-hand: 'GrabbyPaws', 'Segoe Script', cursive;
 }
 
 /* Base theming */
@@ -77,6 +87,13 @@ html body {
 .prose h1, .prose h2, .prose h3, .prose h4 {
   color: var(--panic-purple);
   text-shadow: 0 0 10px var(--panic-glow);
+  font-family: var(--grabby-hand);
+  letter-spacing: 0.01em;
+}
+
+/* Utility class for applying the handwriting font anywhere */
+.grabby-hand, .witchy-hand {
+  font-family: var(--grabby-hand);
 }
 
 /* Gaming-style links */
