@@ -65,7 +65,7 @@ step "Installing composer deps"
 composer install --no-dev --optimize-autoloader --no-interaction --quiet && ok "done" || warn "composer failed"
 
 step "Running winter:up migrations"
-php artisan winter:up --force 2>/dev/null && ok "migrations ok" || warn "migrations skipped"
+php artisan winter:up 2>/dev/null && ok "migrations ok" || warn "migrations skipped"
 
 # 6. Clear caches
 step "Clearing WinterCMS + framework caches"
