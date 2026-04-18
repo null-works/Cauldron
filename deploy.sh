@@ -1,28 +1,97 @@
 #!/bin/bash
-# Deploy script for Winter CMS on Hestia VPS
-# Usage: ssh into server, cd to web root, run ./deploy.sh
+#
+# deploy.sh — SystemPanic deploy / update workflow
+#
+# Run from the repo root on the server (as root, since it needs chown + systemctl):
+#
+#     ./deploy.sh
+#
+# Order of operations:
+#   1. Commit any backend CMS edits under themes/panic-purple/content/
+#   2. Discard unrelated local modifications (chmod flips etc.)
+#   3. Pull latest from origin/claude/codebase-review-2yXTt (rebase)
+#   4. Push the content commit back up
+#   5. composer install + winter:up migrations (idempotent, quick if nothing changed)
+#   6. Clear WinterCMS caches (twig, combiner, cms cache, framework views, app cache)
+#   7. Restore file permissions
+#   8. Restart php-fpm to blow away opcache
+#
 
-set -e
+BRANCH="claude/codebase-review-2yXTt"
+CONTENT_PATH="themes/panic-purple/content/"
 
-echo "Pulling latest changes..."
-git pull origin main
+cd "$(dirname "$0")" || { echo "! Could not cd to repo root"; exit 1; }
 
-echo "Installing dependencies..."
-composer install --no-dev --optimize-autoloader --no-interaction
+step() { echo; echo "▶ $*"; }
+ok()   { echo "  ✓ $*"; }
+warn() { echo "  ! $*"; }
 
-echo "Running migrations..."
-php artisan winter:up
+# 1. Capture backend edits
+step "Capturing backend edits in $CONTENT_PATH"
+if [ -n "$(git status --porcelain "$CONTENT_PATH")" ]; then
+    git add "$CONTENT_PATH"
+    if git -c user.name="CMS Autosync" -c user.email="cms@systempanic.ca" \
+           commit -m "Auto-sync CMS content from backend" >/dev/null; then
+        ok "committed"
+    else
+        warn "commit failed"
+    fi
+else
+    ok "nothing new"
+fi
 
-echo "Clearing cache..."
-php artisan cache:clear
-php artisan config:clear
-php artisan view:clear
+# 2. Discard unrelated local mods (mode flips etc.)
+step "Discarding unrelated local modifications"
+git checkout -- . 2>/dev/null && ok "clean working tree"
 
-echo "Setting permissions..."
-# Detect the site owner from the parent directory
+# 3. Pull latest
+step "Pulling latest from origin/$BRANCH"
+if ! git pull --rebase origin "$BRANCH"; then
+    warn "pull failed — resolve conflicts manually, then re-run"
+    exit 1
+fi
+ok "pulled"
+
+# 4. Push any new content commit
+step "Pushing content commit to origin/$BRANCH"
+git push origin "HEAD:$BRANCH" && ok "pushed" || warn "push failed — check credentials; backend edits remain local"
+
+# 5. Composer + migrations
+step "Installing composer deps"
+composer install --no-dev --optimize-autoloader --no-interaction --quiet && ok "done" || warn "composer failed"
+
+step "Running winter:up migrations"
+php artisan winter:up --force 2>/dev/null && ok "migrations ok" || warn "migrations skipped"
+
+# 6. Clear caches
+step "Clearing WinterCMS + framework caches"
+rm -rf storage/cms/twig/* storage/cms/combiner/* storage/cms/cache/* storage/framework/views/* 2>/dev/null
+php artisan cache:clear >/dev/null
+php artisan config:clear >/dev/null 2>&1 || true
+php artisan view:clear   >/dev/null 2>&1 || true
+ok "cleared"
+
+# 7. Restore permissions
+step "Restoring file permissions"
 SITE_USER=$(stat -c '%U' .)
 SITE_GROUP=$(stat -c '%G' .)
-chown -R "${SITE_USER}:${SITE_GROUP}" storage bootstrap/cache themes plugins
-chmod -R 775 storage bootstrap/cache themes plugins
+if chown -R "${SITE_USER}:${SITE_GROUP}" storage bootstrap/cache themes plugins 2>/dev/null; then
+    chmod -R 775 storage bootstrap/cache themes plugins 2>/dev/null
+    ok "chown + chmod done (${SITE_USER}:${SITE_GROUP})"
+else
+    warn "chown failed (need root?)"
+fi
 
-echo "Deploy complete."
+# 8. Restart php-fpm (opcache)
+step "Restarting php-fpm (clears opcache)"
+if systemctl restart php8.2-fpm 2>/dev/null \
+|| systemctl restart php8.1-fpm 2>/dev/null \
+|| systemctl restart php8.0-fpm 2>/dev/null \
+|| systemctl restart php-fpm   2>/dev/null; then
+    ok "php-fpm restarted"
+else
+    warn "could not restart php-fpm — try manually: systemctl restart <unit>"
+fi
+
+echo
+echo "✓ Deploy complete."
