@@ -264,12 +264,11 @@ p.grabby-hand.footer-tagline {
 
 .sparkle-wrap .sparkle-flare {
   position: absolute;
-  inset: -80%;
+  inset: -120%;
   background:
-    linear-gradient(0deg,   transparent 44%, rgba(255,255,255,0.7) 49%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,0.7) 51%, transparent 56%),
-    linear-gradient(90deg,  transparent 44%, rgba(255,255,255,0.5) 49%, rgba(255,255,255,0.8)  50%, rgba(255,255,255,0.5) 51%, transparent 56%),
-    linear-gradient(45deg,  transparent 46%, rgba(220,200,255,0.3) 49.5%, rgba(220,200,255,0.5) 50%, rgba(220,200,255,0.3) 50.5%, transparent 54%),
-    linear-gradient(135deg, transparent 46%, rgba(220,200,255,0.3) 49.5%, rgba(220,200,255,0.5) 50%, rgba(220,200,255,0.3) 50.5%, transparent 54%);
+    linear-gradient(0deg,   transparent 49.6%, rgba(255,255,255,0.4) 49.9%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.4) 50.1%, transparent 50.4%),
+    linear-gradient(90deg,  transparent 49.6%, rgba(255,255,255,0.3) 49.9%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.3) 50.1%, transparent 50.4%),
+    radial-gradient(circle at center, rgba(200,180,255,0.25) 0%, rgba(200,180,255,0.08) 25%, transparent 50%);
   border-radius: 50%;
   animation: flare-rotate 10s linear infinite;
   opacity: 0;
