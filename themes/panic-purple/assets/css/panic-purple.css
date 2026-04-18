@@ -243,17 +243,11 @@ p.grabby-hand.footer-tagline {
   pointer-events: none;
   z-index: 1;
   overflow: hidden;
-  animation: sparkle-hue 12s linear infinite;
-}
-
-@keyframes sparkle-hue {
-  from { filter: hue-rotate(0deg); }
-  to   { filter: hue-rotate(360deg); }
 }
 
 .body-sparkles .sparkle {
   position: absolute;
-  background-color: rgba(200, 160, 255, 0.95);
+  background-color: rgba(255, 255, 255, 0.95);
   -webkit-mask-repeat: no-repeat;
           mask-repeat: no-repeat;
   -webkit-mask-size: contain;
@@ -261,13 +255,25 @@ p.grabby-hand.footer-tagline {
   -webkit-mask-position: center;
           mask-position: center;
   opacity: 0;
-  filter: drop-shadow(0 0 8px rgba(200, 162, 255, 0.6));
-  animation: sparkle-twinkle 6s ease-in-out infinite;
+  animation: sparkle-shimmer 6s ease-in-out infinite;
 }
 
-@keyframes sparkle-twinkle {
-  0%, 100% { opacity: 0.2; transform: scale(0.85) rotate(0deg); }
-  50%      { opacity: 1;   transform: scale(1.1)  rotate(20deg); }
+@keyframes sparkle-shimmer {
+  0%, 100% {
+    opacity: 0.15;
+    transform: scale(0.85);
+    filter:
+      drop-shadow(0 0 2px rgba(255,255,255,0.4))
+      drop-shadow(0 0 6px rgba(200,180,255,0.2));
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+    filter:
+      drop-shadow(0 0 6px rgba(255,255,255,1))
+      drop-shadow(0 0 18px rgba(220,200,255,0.7))
+      drop-shadow(0 0 36px rgba(180,140,255,0.35));
+  }
 }
 
 /* Keep main content above the body layers */
