@@ -52,9 +52,13 @@ if ! git pull --rebase origin "$BRANCH"; then
 fi
 ok "pulled"
 
-# 4. Push any new content commit
+# 4. Push any new content commit (never prompt — skip silently if no creds)
 step "Pushing content commit to origin/$BRANCH"
-git push origin "HEAD:$BRANCH" && ok "pushed" || warn "push failed — check credentials; backend edits remain local"
+if GIT_TERMINAL_PROMPT=0 git push origin "HEAD:$BRANCH" 2>/dev/null; then
+    ok "pushed"
+else
+    warn "push skipped (no credentials yet — content is committed locally, safe until next pull)"
+fi
 
 # 5. Composer + migrations
 step "Installing composer deps"
