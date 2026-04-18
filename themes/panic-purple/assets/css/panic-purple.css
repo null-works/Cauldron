@@ -227,6 +227,22 @@ p.grabby-hand.footer-tagline {
   margin: 0;
 }
 
+/* Twinkling stars layer when a background image is set on the hero */
+.hero-stars-layer .hero-star {
+  position: absolute;
+  color: #fff;
+  opacity: 0;
+  line-height: 1;
+  animation: hero-twinkle 4s ease-in-out infinite;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.6), 0 0 16px rgba(200, 162, 255, 0.4);
+  user-select: none;
+}
+
+@keyframes hero-twinkle {
+  0%, 100% { opacity: 0.15; transform: scale(0.85); }
+  50%      { opacity: 0.9;  transform: scale(1.1);  }
+}
+
 .carousel-slide img {
   animation: float 6s ease-in-out infinite;
   filter: brightness(0.8);

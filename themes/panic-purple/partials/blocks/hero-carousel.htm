@@ -8,7 +8,10 @@
     {% if carouselBg and carouselDarken > 0 %}
     <div class="absolute inset-0 pointer-events-none" style="background: rgba(0,0,0,{{ (carouselDarken / 100)|number_format(2) }}); z-index: 1;"></div>
     {% endif %}
-    <div id="carousel-slides" class="flex transition-transform duration-500 ease-in-out w-full h-full relative" style="z-index: 2;">
+    {% if carouselBg %}
+    <div class="hero-stars-layer absolute inset-0 pointer-events-none" aria-hidden="true" style="z-index: 2;"></div>
+    {% endif %}
+    <div id="carousel-slides" class="flex transition-transform duration-500 ease-in-out w-full h-full relative" style="z-index: 3;">
         {% for slide in slides %}
         <div class="carousel-item flex-none w-full h-full relative {% if not carouselBg %}bg-gradient-to-br from-[--panic-dark] to-[--panic-deep]{% endif %} text-[--panic-text] overflow-hidden">
             <div class="max-w-screen-2xl w-full mx-auto h-full flex flex-col md:flex-row gap-16 px-16">
@@ -120,6 +123,24 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    // Stars layer (when a carousel background image is set)
+    document.querySelectorAll('.hero-stars-layer').forEach(layer => {
+        if (layer.children.length > 0) return;
+        const glyphs = ['✦', '✧', '⋆', '✶', '∗'];
+        const count = 60;
+        for (let i = 0; i < count; i++) {
+            const s = document.createElement('span');
+            s.className = 'hero-star';
+            s.textContent = glyphs[i % glyphs.length];
+            s.style.left = (Math.random() * 100) + '%';
+            s.style.top = (Math.random() * 100) + '%';
+            s.style.fontSize = (Math.random() * 12 + 8) + 'px';
+            s.style.animationDelay = (Math.random() * 5) + 's';
+            s.style.animationDuration = (3 + Math.random() * 4) + 's';
+            layer.appendChild(s);
+        }
+    });
+
     // Particle Generation
     document.querySelectorAll('.particle-container').forEach(container => {
         if (container.children.length > 0) return;
