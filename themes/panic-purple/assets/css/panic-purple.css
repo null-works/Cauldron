@@ -183,9 +183,10 @@ footer {
   align-items: center;
   justify-content: center;
   gap: 14px;
-  margin: 6px auto 18px;
+  margin: 0 auto 2px;
   color: var(--panic-purple);
   opacity: 0.85;
+  line-height: 1;
 }
 
 .witchy-divider .divider-star {
@@ -208,6 +209,7 @@ footer {
   letter-spacing: 0.02em;
   text-shadow: 0 0 10px var(--panic-glow);
   margin: 0;
+  line-height: 1.1;
 }
 
 .hero-carousel {
