@@ -247,17 +247,21 @@ p.grabby-hand.footer-tagline {
 
 .body-sparkles .sparkle {
   position: absolute;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
+  background-color: rgba(255, 245, 220, 0.95);
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+          mask-size: contain;
+  -webkit-mask-position: center;
+          mask-position: center;
   opacity: 0;
-  filter: invert(1) drop-shadow(0 0 6px rgba(200, 162, 255, 0.5));
+  filter: drop-shadow(0 0 8px rgba(200, 162, 255, 0.6));
   animation: sparkle-twinkle 6s ease-in-out infinite;
 }
 
 @keyframes sparkle-twinkle {
-  0%, 100% { opacity: 0.15; transform: scale(0.85) rotate(0deg); }
-  50%      { opacity: 0.85; transform: scale(1.05) rotate(20deg); }
+  0%, 100% { opacity: 0.2; transform: scale(0.85) rotate(0deg); }
+  50%      { opacity: 1;   transform: scale(1.1)  rotate(20deg); }
 }
 
 /* Keep main content above the body layers */
