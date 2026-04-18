@@ -1,16 +1,16 @@
 {% set slides = data.slides %}
+{% set carouselBg = data.background_image ? true : false %}
+{% set carouselDarken = data.background_darken is not null ? data.background_darken : 40 %}
 
 {% if slides|length %}
-<div id="carousel-container" class="relative w-full h-[70vh] overflow-hidden rounded-lg shadow-xl">
-    <div id="carousel-slides" class="flex transition-transform duration-500 ease-in-out w-full h-full">
+<div id="carousel-container" class="relative w-full h-[70vh] overflow-hidden rounded-lg shadow-xl"
+     {% if carouselBg %}style="background-image: url('{{ data.background_image|media }}'); background-size: cover; background-position: center;"{% endif %}>
+    {% if carouselBg and carouselDarken > 0 %}
+    <div class="absolute inset-0 pointer-events-none" style="background: rgba(0,0,0,{{ (carouselDarken / 100)|number_format(2) }}); z-index: 1;"></div>
+    {% endif %}
+    <div id="carousel-slides" class="flex transition-transform duration-500 ease-in-out w-full h-full relative" style="z-index: 2;">
         {% for slide in slides %}
-        {% set hasBg = slide.background_image ? true : false %}
-        {% set darken = slide.background_darken is not null ? slide.background_darken : 40 %}
-        <div class="carousel-item flex-none w-full h-full relative {% if not hasBg %}bg-gradient-to-br from-[--panic-dark] to-[--panic-deep]{% endif %} text-[--panic-text] overflow-hidden"
-             {% if hasBg %}style="background-image: url('{{ slide.background_image|media }}'); background-size: cover; background-position: center;"{% endif %}>
-            {% if hasBg and darken > 0 %}
-            <div class="absolute inset-0 pointer-events-none" style="background: rgba(0,0,0,{{ (darken / 100)|number_format(2) }}); z-index: 1;"></div>
-            {% endif %}
+        <div class="carousel-item flex-none w-full h-full relative {% if not carouselBg %}bg-gradient-to-br from-[--panic-dark] to-[--panic-deep]{% endif %} text-[--panic-text] overflow-hidden">
             <div class="max-w-screen-2xl w-full mx-auto h-full flex flex-col md:flex-row gap-16 px-16">
                 <div class="w-full {{ slide.show_video ? 'md:w-1/2' : 'md:w-2/3 md:mx-auto' }} flex flex-col justify-center text-center md:text-left z-10">
 

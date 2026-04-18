@@ -3,6 +3,22 @@ hero-carousel:
     description: Full-width hero carousel with slides containing text, video, and bokeh particles
     icon: icon-film
     fields:
+        background_image:
+            label: Carousel Background Image
+            comment: Optional — replaces the purple gradient backdrop for the entire carousel. Bokeh particles layer on top.
+            type: mediafinder
+            mode: image
+            span: full
+        background_darken:
+            label: Darken Background (%)
+            comment: Overlay opacity for text readability (0 = none, 100 = black)
+            type: number
+            default: 40
+            span: left
+            trigger:
+                action: show
+                field: background_image
+                condition: value
         slides:
             type: repeater
             prompt: Add slide
@@ -20,22 +36,6 @@ hero-carousel:
                         span: right
                         placeholder: "> STATUS_REPORT"
                         default: "> STATUS_REPORT"
-                    background_image:
-                        label: Background Image
-                        comment: Optional — replaces the purple gradient backdrop for this slide
-                        type: mediafinder
-                        mode: image
-                        span: full
-                    background_darken:
-                        label: Darken Background (%)
-                        comment: Overlay opacity for text readability (0 = none, 100 = black)
-                        type: number
-                        default: 40
-                        span: left
-                        trigger:
-                            action: show
-                            field: background_image
-                            condition: value
                     description:
                         label: Short Description
                         type: textarea
