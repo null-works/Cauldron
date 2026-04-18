@@ -99,7 +99,9 @@
                 </div>
                 {% endif %}
             </div>
+            {% if not carouselBg %}
             <div class="particle-container absolute top-0 left-0 w-full h-full pointer-events-none"></div>
+            {% endif %}
         </div>
         {% endfor %}
     </div>
