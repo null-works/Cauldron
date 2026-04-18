@@ -243,11 +243,17 @@ p.grabby-hand.footer-tagline {
   pointer-events: none;
   z-index: 1;
   overflow: hidden;
+  animation: sparkle-hue 12s linear infinite;
+}
+
+@keyframes sparkle-hue {
+  from { filter: hue-rotate(0deg); }
+  to   { filter: hue-rotate(360deg); }
 }
 
 .body-sparkles .sparkle {
   position: absolute;
-  background-color: rgba(255, 245, 220, 0.95);
+  background-color: rgba(200, 160, 255, 0.95);
   -webkit-mask-repeat: no-repeat;
           mask-repeat: no-repeat;
   -webkit-mask-size: contain;
