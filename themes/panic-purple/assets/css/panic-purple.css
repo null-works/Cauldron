@@ -245,8 +245,14 @@ p.grabby-hand.footer-tagline {
   overflow: hidden;
 }
 
-.body-sparkles .sparkle {
+.sparkle-wrap {
   position: absolute;
+  animation: sparkle-pulse 6s ease-in-out infinite;
+}
+
+.sparkle-wrap .sparkle-shape {
+  width: 100%;
+  height: 100%;
   background-color: rgba(255, 255, 255, 0.95);
   -webkit-mask-repeat: no-repeat;
           mask-repeat: no-repeat;
@@ -254,26 +260,42 @@ p.grabby-hand.footer-tagline {
           mask-size: contain;
   -webkit-mask-position: center;
           mask-position: center;
-  opacity: 0;
-  animation: sparkle-shimmer 6s ease-in-out infinite;
 }
 
-@keyframes sparkle-shimmer {
+.sparkle-wrap .sparkle-flare {
+  position: absolute;
+  inset: -80%;
+  background:
+    linear-gradient(0deg,   transparent 44%, rgba(255,255,255,0.7) 49%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,0.7) 51%, transparent 56%),
+    linear-gradient(90deg,  transparent 44%, rgba(255,255,255,0.5) 49%, rgba(255,255,255,0.8)  50%, rgba(255,255,255,0.5) 51%, transparent 56%),
+    linear-gradient(45deg,  transparent 46%, rgba(220,200,255,0.3) 49.5%, rgba(220,200,255,0.5) 50%, rgba(220,200,255,0.3) 50.5%, transparent 54%),
+    linear-gradient(135deg, transparent 46%, rgba(220,200,255,0.3) 49.5%, rgba(220,200,255,0.5) 50%, rgba(220,200,255,0.3) 50.5%, transparent 54%);
+  border-radius: 50%;
+  animation: flare-rotate 10s linear infinite;
+  opacity: 0;
+}
+
+@keyframes sparkle-pulse {
   0%, 100% {
-    opacity: 0.15;
-    transform: scale(0.85);
-    filter:
-      drop-shadow(0 0 2px rgba(255,255,255,0.4))
-      drop-shadow(0 0 6px rgba(200,180,255,0.2));
+    opacity: 0.1;
+    transform: scale(0.8);
+    filter: drop-shadow(0 0 2px rgba(255,255,255,0.3));
   }
   50% {
     opacity: 1;
     transform: scale(1.15);
     filter:
-      drop-shadow(0 0 6px rgba(255,255,255,1))
-      drop-shadow(0 0 18px rgba(220,200,255,0.7))
-      drop-shadow(0 0 36px rgba(180,140,255,0.35));
+      drop-shadow(0 0 6px rgba(255,255,255,0.9))
+      drop-shadow(0 0 20px rgba(200,180,255,0.5));
   }
+}
+
+@keyframes flare-rotate {
+  from { transform: rotate(0deg); opacity: 0.5; }
+  25%  { opacity: 0.9; }
+  50%  { opacity: 0.5; }
+  75%  { opacity: 0.9; }
+  to   { transform: rotate(180deg); opacity: 0.5; }
 }
 
 /* Keep main content above the body layers */
