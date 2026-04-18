@@ -178,6 +178,38 @@ footer {
   padding: 20px 0;
 }
 
+.witchy-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 6px auto 18px;
+  color: var(--panic-purple);
+  opacity: 0.85;
+}
+
+.witchy-divider .divider-star {
+  font-size: 16px;
+  line-height: 1;
+  color: var(--panic-pink);
+  text-shadow: 0 0 8px var(--panic-glow);
+}
+
+.witchy-divider .divider-moon {
+  width: 26px;
+  height: 26px;
+  color: var(--panic-yellow);
+  filter: drop-shadow(0 0 10px rgba(234, 179, 8, 0.4));
+}
+
+.footer-tagline {
+  color: var(--panic-purple);
+  font-size: 1.25rem;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 10px var(--panic-glow);
+  margin: 0;
+}
+
 .hero-carousel {
   width: 100%;
   margin: 0;
