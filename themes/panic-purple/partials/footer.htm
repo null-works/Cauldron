@@ -1,5 +1,13 @@
 [viewBag]
 ==
+<?php
+function onStart()
+{
+    $buildFile = base_path('BUILD');
+    $this['build'] = is_file($buildFile) ? trim(file_get_contents($buildFile)) : 'dev';
+}
+?>
+==
 <footer class="body-font py-10">
   <div class="container mx-auto px-5 flex flex-col items-center">
     <div class="witchy-divider" aria-hidden="true">
@@ -12,7 +20,7 @@
       <span class="divider-star">✦</span>
     </div>
     <p class="grabby-hand footer-tagline">
-      System Panic {{ "now"|date("Y") }} &mdash; Brewed By Story Craft with Cauldron
+      System Panic {{ "now"|date("Y") }} &mdash; Brewed By Story Craft with Cauldron <span class="footer-build">{{ build }}</span>
     </p>
   </div>
 </footer>

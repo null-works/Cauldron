@@ -68,6 +68,9 @@ step "Running winter:up migrations"
 php artisan winter:up 2>/dev/null && ok "migrations ok" || warn "migrations skipped"
 
 # 6. Clear caches
+step "Writing BUILD file (short commit hash)"
+git rev-parse --short HEAD > BUILD 2>/dev/null && ok "$(cat BUILD)" || warn "could not write BUILD"
+
 step "Clearing WinterCMS + framework caches"
 rm -rf storage/cms/twig/* storage/cms/combiner/* storage/cms/cache/* storage/framework/views/* 2>/dev/null
 php artisan cache:clear >/dev/null

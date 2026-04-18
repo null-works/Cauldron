@@ -212,6 +212,15 @@ footer {
   line-height: 1.1;
 }
 
+.footer-build {
+  font-family: 'Courier New', monospace;
+  font-size: 0.7em;
+  opacity: 0.6;
+  margin-left: 6px;
+  letter-spacing: 0;
+  text-shadow: none;
+}
+
 .hero-carousel {
   width: 100%;
   margin: 0;
