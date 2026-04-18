@@ -79,13 +79,7 @@ categoryPage = "blog/category"
           shape.style.webkitMaskImage = url;
           shape.style.maskImage = url;
 
-          var flare = document.createElement('div');
-          flare.className = 'sparkle-flare';
-          flare.style.animationDelay = (Math.random() * 10) + 's';
-          flare.style.animationDuration = (8 + Math.random() * 6) + 's';
-
           wrap.appendChild(shape);
-          wrap.appendChild(flare);
           host.appendChild(wrap);
         }
       })();
