@@ -25,6 +25,9 @@ categoryPage = "blog/category"
     {% styles %}
 </head>
 <body>
+    <div class="body-darken" aria-hidden="true"></div>
+    <div class="body-sparkles" id="body-sparkles" aria-hidden="true"></div>
+
     {repeater
         name="sections"
         groups="themes/panic-purple/meta/sections.yaml"
@@ -51,6 +54,29 @@ categoryPage = "blog/category"
         {% endfor %}
     </main>
     {% partial 'footer' %}
+
+    <script>
+      (function () {
+        var host = document.getElementById('body-sparkles');
+        if (!host) return;
+        var base = "{{ 'assets/img/sparkles/'|theme }}";
+        var files = ['sparkle-108.svg','sparkle-109.svg','sparkle-110.svg','sparkle-111.svg','sparkle-112.svg','sparkle-113.svg','sparkle-117.svg','sparkle-118.svg','sparkle-119.svg','sparkle-120.svg'];
+        var count = 50;
+        for (var i = 0; i < count; i++) {
+          var s = document.createElement('div');
+          s.className = 'sparkle';
+          var size = Math.round(Math.random() * 22 + 10);
+          s.style.width = size + 'px';
+          s.style.height = size + 'px';
+          s.style.left = (Math.random() * 100) + '%';
+          s.style.top = (Math.random() * 100) + '%';
+          s.style.backgroundImage = "url('" + base + files[i % files.length] + "')";
+          s.style.animationDelay = (Math.random() * 6) + 's';
+          s.style.animationDuration = (5 + Math.random() * 5) + 's';
+          host.appendChild(s);
+        }
+      })();
+    </script>
     {% scripts %}
 </body>
 </html>

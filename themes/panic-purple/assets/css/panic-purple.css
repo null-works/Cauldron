@@ -227,20 +227,43 @@ p.grabby-hand.footer-tagline {
   margin: 0;
 }
 
-/* Twinkling stars layer when a background image is set on the hero */
-.hero-stars-layer .hero-star {
-  position: absolute;
-  color: #fff;
-  opacity: 0;
-  line-height: 1;
-  animation: hero-twinkle 4s ease-in-out infinite;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.6), 0 0 16px rgba(200, 162, 255, 0.4);
-  user-select: none;
+/* Darkening overlay on top of body bg, below sparkles + content */
+.body-darken {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: rgba(0, 0, 0, 0.4);
 }
 
-@keyframes hero-twinkle {
-  0%, 100% { opacity: 0.15; transform: scale(0.85); }
-  50%      { opacity: 0.9;  transform: scale(1.1);  }
+/* Body-wide sparkle layer (uses Kait's SVG sparkles from assets/img/sparkles/) */
+.body-sparkles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.body-sparkles .sparkle {
+  position: absolute;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  opacity: 0;
+  filter: invert(1) drop-shadow(0 0 6px rgba(200, 162, 255, 0.5));
+  animation: sparkle-twinkle 6s ease-in-out infinite;
+}
+
+@keyframes sparkle-twinkle {
+  0%, 100% { opacity: 0.15; transform: scale(0.85) rotate(0deg); }
+  50%      { opacity: 0.85; transform: scale(1.05) rotate(20deg); }
+}
+
+/* Keep main content above the body layers */
+header, main, footer, #carousel-container {
+  position: relative;
+  z-index: 2;
 }
 
 .carousel-slide img {
