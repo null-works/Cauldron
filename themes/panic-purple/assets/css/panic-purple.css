@@ -172,10 +172,11 @@ nav a:hover {
 
 /* Footer styling */
 footer {
-  background: var(--panic-dark);
+  background: var(--panic-dark) !important;
   border-top: 1px solid var(--panic-purple);
-  margin-top: 40px;
-  padding: 48px 0;
+  margin-top: 60px !important;
+  padding-top: 60px !important;
+  padding-bottom: 60px !important;
 }
 
 .witchy-divider {
