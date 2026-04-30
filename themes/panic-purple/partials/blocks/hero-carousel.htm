@@ -120,28 +120,41 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Particle Generation
+    // Bokeh particles — drawn once onto a single canvas (no per-element blur filters)
     document.querySelectorAll('.particle-container').forEach(container => {
-        if (container.children.length > 0) return;
-        const colors = ['#8B5CF6', '#E879F9', '#06B6D4'];
-        for (let i = 0; i < 250; i++) {
-            const p = document.createElement('div');
-            const size = Math.random() * 180 + 10;
+        if (container.querySelector('canvas')) return;
+        const canvas = document.createElement('canvas');
+        const rect = container.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;';
+        const ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+
+        const colors = ['139,92,246', '232,121,249', '6,182,212']; // purple, pink, cyan
+        for (let i = 0; i < 200; i++) {
+            const size = Math.random() * 160 + 10;
+            const x = Math.random() * rect.width;
+            const y = Math.random() * rect.height;
+            const alpha = Math.random() * 0.35 + 0.05;
             const blur = Math.random() * 12;
-            Object.assign(p.style, {
-                position: 'absolute',
-                width: size + 'px', height: size + 'px',
-                left: Math.random() * 100 + '%',
-                top: Math.random() * 100 + '%',
-                backgroundColor: colors[Math.floor(Math.random() * colors.length)],
-                borderRadius: '50%',
-                opacity: Math.random() * 0.4 + 0.1,
-                filter: 'blur(' + blur + 'px)',
-                transform: 'translate(-50%, -50%)',
-                border: (size > 100 && blur > 6) ? '2px solid rgba(255,255,255,0.1)' : 'none'
-            });
-            container.appendChild(p);
+            const color = colors[Math.floor(Math.random() * colors.length)];
+
+            ctx.save();
+            ctx.filter = 'blur(' + blur + 'px)';
+            ctx.beginPath();
+            ctx.arc(x, y, size / 2, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(' + color + ',' + alpha + ')';
+            ctx.fill();
+            if (size > 100 && blur > 6) {
+                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+            ctx.restore();
         }
+        container.appendChild(canvas);
     });
 
     // Carousel Navigation
