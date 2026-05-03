@@ -26,7 +26,6 @@ categoryPage = "blog/category"
 </head>
 <body>
     <div class="body-darken" aria-hidden="true"></div>
-    <div class="body-sparkles" id="body-sparkles" aria-hidden="true"></div>
 
     {repeater
         name="sections"
@@ -54,37 +53,6 @@ categoryPage = "blog/category"
         {% endfor %}
     </main>
     {% partial 'footer' %}
-
-    <script>
-      (function () {
-        var host = document.getElementById('body-sparkles');
-        if (!host) return;
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        var base = "{{ 'assets/img/sparkles/'|theme }}";
-        var files = ['sparkle-108.svg','sparkle-109.svg','sparkle-110.svg','sparkle-111.svg','sparkle-112.svg','sparkle-113.svg','sparkle-117.svg','sparkle-118.svg','sparkle-119.svg','sparkle-120.svg'];
-        var count = 100;
-        for (var i = 0; i < count; i++) {
-          var wrap = document.createElement('div');
-          wrap.className = 'sparkle-wrap';
-          var size = Math.round(Math.random() * 30 + 16);
-          var url = "url('" + base + "/" + files[i % files.length] + "')";
-          wrap.style.width = size + 'px';
-          wrap.style.height = size + 'px';
-          wrap.style.left = (Math.random() * 100) + '%';
-          wrap.style.top = (Math.random() * 100) + '%';
-          wrap.style.animationDelay = (Math.random() * 6) + 's';
-          wrap.style.animationDuration = (5 + Math.random() * 5) + 's';
-
-          var shape = document.createElement('div');
-          shape.className = 'sparkle-shape';
-          shape.style.webkitMaskImage = url;
-          shape.style.maskImage = url;
-
-          wrap.appendChild(shape);
-          host.appendChild(wrap);
-        }
-      })();
-    </script>
     {% scripts %}
 </body>
 </html>
